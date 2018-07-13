@@ -1,3 +1,5 @@
+PREFIX = /usr/local
+
 CXX = gcc
 CFLAGS = -Wall -Werror
 
@@ -17,3 +19,12 @@ build: $(SOURCES)
 .PHONY: clean
 clean:
 	rm -f $(OBJ) $(OUT)
+
+.PHONY: install
+install: kraken
+	mkdir -p $(DESTDIR)$(PREFIX)/bin
+	cp $< $(DESTDIR)$(PREFIX)/bin/$(OUT)
+
+.PHONY: uninstall
+uninstall:
+	rm -f $(DESTDIR)$(PREFIX)/bin/$(OUT)
