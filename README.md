@@ -56,7 +56,7 @@ yaourt -S heimdallr-git
 
 If you like this tool, don't forget to vote for it, so others can find it, too!
 
-https://aur.archlinux.org/pkgbase/heimfdallr-git/ (the button is hidden on the right under 'package actions')
+https://aur.archlinux.org/pkgbase/heimdallr-git/ (the button is hidden on the right under 'package actions')
 Thanks!
 
 
