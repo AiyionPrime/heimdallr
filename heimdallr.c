@@ -16,7 +16,7 @@ void synopsys(char * cmd)
 
 void help(void)
 {
-	char* cmd = "kraken";
+	char* cmd = "heimdallr";
 	synopsys(cmd);
 	printf("  %s -u <name> to look up known usernames\n", cmd);
 	printf("  %s -s <name> to search for users interactively\n", cmd);
@@ -174,6 +174,8 @@ int find_user(char *name)
 
 
 int main(int argc, char *argv[]){
+	if (1 == argc)
+		synopsys("heimdallr");
 	while ((argc > 1) && ('-' == argv[1][0])){
 		switch (argv[1][1])
 		{
@@ -186,8 +188,8 @@ int main(int argc, char *argv[]){
 			case 'h':
 				help();
 			default:
-				printf("Error: Unknown parameter.\nTake a look into 'kraken -h':\n");
-				help();
+				printf("Error: Unknown parameter.\nTake a look into 'heimdallr -h':\n");
+				synopsys("heimdallr");
 		}
 		++argv;
 		--argc;

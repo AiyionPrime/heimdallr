@@ -7,8 +7,8 @@ LDLIBS = -lcurl -ljson-c
 #LDFLAGS = -Lusr/local/lib 
 #INCLUDE = -Iusr/local/include
 
-SOURCES = kraken.c
-OUT = kraken
+SOURCES = heimdallr.c
+OUT = heimdallr
 OBJ = $(src:.c=.o)
 
 all: build
@@ -21,7 +21,7 @@ clean:
 	rm -f $(OBJ) $(OUT)
 
 .PHONY: install
-install: kraken
+install: heimdallr
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
 	cp $< $(DESTDIR)$(PREFIX)/bin/$(OUT)
 
