@@ -9,13 +9,19 @@ struct MemoryStruct {
 	size_t size;
 };
 
+void synopsys(char * cmd)
+{
+        printf("Usage: %s [-u username|-s username|-p port|-h]\n", cmd);
+}
+
 void help(void)
 {
-	printf("Usage:\n");
-	printf("  -s <name>\n");
-	printf("  -u <name>\n");
-	printf("  -p <port>\n");
-	printf("  -h \n");
+	char* cmd = "kraken";
+	synopsys(cmd);
+	printf("  %s -u <name> to look up known usernames\n", cmd);
+	printf("  %s -s <name> to search for users interactively\n", cmd);
+	printf("  %s -p <port> to open a ssh server to scrape keys locally\n", cmd);
+	printf("  %s -h to open this help\n", cmd);
 	exit(0);
 }
 
@@ -104,7 +110,6 @@ void get_keys(const char *username)
 	curl_easy_cleanup(curl);
 	free(chunk.memory);
 	free(built_url);
-	
 }
 
 
