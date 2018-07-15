@@ -20,6 +20,7 @@ void help(void)
 	synopsys(cmd);
 	printf("  %s -u <name> to look up known usernames\n", cmd);
 	printf("  %s -s <name> to search for users interactively\n", cmd);
+	printf("  %s -p <port> to open a ssh server to scrape keys locally\n", cmd);
 	printf("  %s -h to open this help\n", cmd);
 	printf("  %s -V to show the version\n", cmd);
 	exit(0);
