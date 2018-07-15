@@ -1,7 +1,7 @@
 PREFIX = /usr
 
 CXX = gcc
-CFLAGS = -Wall -Werror
+CFLAGS = -Wall -Werror -DVERSION=\"$(GIT_VERSION)\"
 
 LDLIBS = -lcurl -ljson-c
 #LDFLAGS = -Lusr/local/lib 
@@ -11,9 +11,11 @@ SOURCES = heimdallr.c
 OUT = heimdallr
 OBJ = $(src:.c=.o)
 
+GIT_VERSION := $(shell git describe --dirty --always --tags)
+
 all: build
 
-build: $(SOURCES)
+build: $(SOURCES) compiler_flags
 	$(CXX) -o $(OUT) $(INCLUDE) $(CFLAGS) $(LDFLAGS) $(SOURCES) $(LDLIBS)
 
 .PHONY: clean
@@ -28,3 +30,7 @@ install: heimdallr
 .PHONY: uninstall
 uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/$(OUT)
+
+.PHONY: force
+compiler_flags: force
+	echo '$(CFLAGS)' | cmp -s - $@ || echo '$(CFLAGS)' > $@

@@ -11,7 +11,7 @@ struct MemoryStruct {
 
 void synopsys(char * cmd)
 {
-        printf("Usage: %s [-u username|-s username|-p port|-h]\n", cmd);
+        printf("Usage: %s [-u username|-s username|-p port|-h|-V]\n", cmd);
 }
 
 void help(void)
@@ -22,6 +22,7 @@ void help(void)
 	printf("  %s -s <name> to search for users interactively\n", cmd);
 	printf("  %s -p <port> to open a ssh server to scrape keys locally\n", cmd);
 	printf("  %s -h to open this help\n", cmd);
+	printf("  %s -V to show the version\n", cmd);
 	exit(0);
 }
 
@@ -187,6 +188,9 @@ int main(int argc, char *argv[]){
 				break;
 			case 'h':
 				help();
+			case 'V':
+				printf("Version: %s\n", VERSION);
+				break;
 			default:
 				printf("Error: Unknown parameter.\nTake a look into 'heimdallr -h':\n");
 				synopsys("heimdallr");
