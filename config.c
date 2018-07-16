@@ -11,13 +11,13 @@
 
 
 int valid_port(char *p) {
-    char *endptr;
-    int port;
+	char *endptr;
+	int port;
 
-    port = strtol(p, &endptr, 10);
-    if (MINPORT <= port && port <= MAXPORT && !*endptr && errno == 0)
-        return port;
-    return -1;
+	port = strtol(p, &endptr, 10);
+	if (MINPORT <= port && port <= MAXPORT && !*endptr && errno == 0)
+		return port;
+	return -1;
 }
 
 const char* homedir(){
