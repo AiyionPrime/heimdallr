@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "config.h"
 #include "github.h"
+#include "sshserver.h"
 #include <unistd.h>
 
 
@@ -54,7 +55,7 @@ int main(int argc, char *argv[]){
 					printf("Error: The given port is invalid. Valid ones are between %d and %d.\n", MINPORT, MAXPORT);
 					return EXIT_FAILURE;
 				}
-				printf("Debug: Doing stuff on port %d\n", port);
+				run_ssh_server(port);
 				break;
 			case 'h':
 				help();
