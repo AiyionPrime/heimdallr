@@ -6,5 +6,7 @@
 
 int valid_port(char *p);
 
+const char* homedir();
+
 #endif //CONFIG_HEIMDALLR_H_
 
