@@ -22,6 +22,16 @@ void help(void)
 }
 
 int main(int argc, char *argv[]){
+	int conf_available = ensure_config_dir();
+	if (!conf_available){
+                printf("Info: Could not find config directory, crating one under '~/.config/heimdallr'.\n");
+		conf_available = ensure_config_dir();
+		if (!conf_available){
+			printf("Error: Could not create config directory under '~/.config/heimdallr'.\n");
+		}
+		return EXIT_FAILURE;
+	}
+
 	int port = -1;
 	if (1 == argc)
 		synopsys("heimdallr");
