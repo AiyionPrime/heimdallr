@@ -7,7 +7,7 @@ LDLIBS = -lcurl -ljson-c
 #LDFLAGS = -Lusr/local/lib 
 #INCLUDE = -Iusr/local/include
 
-SOURCES = heimdallr.c sshserver.c config.c
+SOURCES = heimdallr.c config.c sshserver.c
 OUT = heimdallr
 OBJ = $(src:.c=.o)
 

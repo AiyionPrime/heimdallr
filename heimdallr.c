@@ -3,6 +3,7 @@
 #include <curl/curl.h>
 #include <string.h>
 #include <json-c/json.h>
+#include "config.h"
 
 struct MemoryStruct {
 	char *memory;
@@ -175,6 +176,7 @@ int find_user(char *name)
 
 
 int main(int argc, char *argv[]){
+	int port = -1;
 	if (1 == argc)
 		synopsys("heimdallr");
 	while ((argc > 1) && ('-' == argv[1][0])){
@@ -186,8 +188,16 @@ int main(int argc, char *argv[]){
 			case 'u':
 				get_keys(&argv[2][0]);
 				break;
+			case 'p':
+				if ((port = valid_port(&argv[2][0])) < 0) {
+					printf("Error: The given port is invalid. Valid ones are between %d and %d.\n", MINPORT, MAXPORT);
+					return EXIT_FAILURE;
+				}
+				printf("Debug: Doing stuff on port %d\n", port);
+				break;
 			case 'h':
 				help();
+                                break;
 			case 'V':
 				printf("Version: %s\n", VERSION);
 				break;
