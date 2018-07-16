@@ -43,6 +43,10 @@ char* getpath(char* filename){
 int ensure_config_dir(){
 	char *dir_path = getpath("");
 	int ret = mkdir(dir_path, S_IRWXU);
+	if (-1 == ret && errno == 17){
+		ret = 1;
+		errno = 0;
+	}
 	free(dir_path);
 	return ret;
 }
