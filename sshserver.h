@@ -3,6 +3,7 @@
 
 int run_ssh_server(int port);
 
+int authenticate();
 
 #endif //SSHSERVER_H_
 

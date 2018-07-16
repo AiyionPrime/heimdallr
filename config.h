@@ -3,6 +3,7 @@
 
 #define MAXPORT 65535
 #define MINPORT 1
+#define LISTENADDRESS   "0.0.0.0"
 
 int valid_port(char *p);
 
