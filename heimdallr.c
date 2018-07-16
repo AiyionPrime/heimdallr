@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "config.h"
 #include "github.h"
+#include <unistd.h>
 
 
 void synopsys(char * cmd)
@@ -28,8 +29,12 @@ int main(int argc, char *argv[]){
 		conf_available = ensure_config_dir();
 		if (!conf_available){
 			printf("Error: Could not create config directory under '~/.config/heimdallr'.\n");
+			return EXIT_FAILURE;
 		}
-		return EXIT_FAILURE;
+	}
+	const char *key_path = getpath("private.pem");
+	if( !(access(( key_path), F_OK ) != -1 )) {
+		generate_key();
 	}
 
 	int port = -1;

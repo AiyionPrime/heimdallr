@@ -3,7 +3,7 @@ PREFIX = /usr
 CXX = gcc
 CFLAGS = -Wall -Werror -DVERSION=\"$(GIT_VERSION)\"
 
-LDLIBS = -lcurl -ljson-c
+LDLIBS = -lcurl -ljson-c -lcrypto
 #LDFLAGS = -Lusr/local/lib 
 #INCLUDE = -Iusr/local/include
 

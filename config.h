@@ -12,5 +12,7 @@ char* getpath(char* filename);
 
 int ensure_config_dir();
 
+int generate_key();
+
 #endif //CONFIG_HEIMDALLR_H_
 
