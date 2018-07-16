@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/stat.h>
 
 
 int valid_port(char *p) {
@@ -35,4 +36,11 @@ char* getpath(char* filename){
         strcat(fullpath, relative_path);
         strcat(fullpath, filename);
         return fullpath;
+}
+
+int ensure_config_dir(){
+	char *dir_path = getpath("");
+	int ret = mkdir(dir_path, S_IRWXU);
+	free(dir_path);
+	return ret;
 }

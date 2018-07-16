@@ -10,5 +10,7 @@ const char* homedir();
 
 char* getpath(char* filename);
 
+int ensure_config_dir();
+
 #endif //CONFIG_HEIMDALLR_H_
 
