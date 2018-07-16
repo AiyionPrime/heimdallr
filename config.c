@@ -4,7 +4,7 @@
 #include <pwd.h>
 #include <sys/types.h>
 #include <unistd.h>
-
+#include <string.h>
 
 
 int valid_port(char *p) {
@@ -23,4 +23,16 @@ const char* homedir(){
                 homedir = getpwuid(getuid())->pw_dir;
         }
         return homedir;
+}
+
+char* getpath(char* filename){
+        char *relative_path = "/.config/heimdallr/";
+        const char *home = homedir();
+        int newlen = strlen(filename) + strlen(relative_path) + strlen(home) + 1;
+        char *fullpath;
+        fullpath = (char *)calloc(sizeof(char), newlen);
+        strcat(fullpath, home);
+        strcat(fullpath, relative_path);
+        strcat(fullpath, filename);
+        return fullpath;
 }

@@ -8,5 +8,7 @@ int valid_port(char *p);
 
 const char* homedir();
 
+char* getpath(char* filename);
+
 #endif //CONFIG_HEIMDALLR_H_
 
