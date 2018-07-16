@@ -8,11 +8,10 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
-
 
 * `gcc` or another compiler
 * [json-c](https://github.com/json-c/json-c) in order to interprete api responses
+* [openssl](https://github.com/openssl/openssl) for generating ssh keys
 
 
 ### Installing
