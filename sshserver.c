@@ -132,7 +132,42 @@ int process_client() {
 }
 
 int authenticate(struct connection *c) {
-	return EXIT_SUCCESS;
+	ssh_message message;
+	do {
+		message = ssh_message_get(session);
+		if(!message)
+			break;
+		switch(ssh_message_type(message)){
+			case SSH_REQUEST_AUTH:
+				switch(ssh_message_subtype(message)){
+					case SSH_AUTH_METHOD_PASSWORD:
+						printf("User %s wants to auth with pass %s\n",
+							ssh_message_auth_user(message),
+							ssh_message_auth_password(message));
+						// authentication is nothing we care about
+						ssh_message_auth_reply_success(message,0);
+						ssh_message_free(message);
+						return 1;
+					case SSH_AUTH_METHOD_NONE:
+					default:
+						// TODO this should be replaced with the above
+						ssh_message_auth_set_methods(message,
+							SSH_AUTH_METHOD_PASSWORD |
+							SSH_AUTH_METHOD_INTERACTIVE);
+						ssh_message_reply_default(message);
+						break;
+				}
+				break;
+				default:
+				ssh_message_auth_set_methods(message,
+					SSH_AUTH_METHOD_PASSWORD |
+					SSH_AUTH_METHOD_INTERACTIVE);
+				ssh_message_reply_default(message);
+		}
+		ssh_message_free(message);
+	} while (ssh_get_status(session) != SSH_CLOSED ||
+		ssh_get_status(session) != SSH_CLOSED_ERROR);
+	return 0;
 }
 
 int ReadExec(ssh_channel chan, void *vptr, int maxlen) {
