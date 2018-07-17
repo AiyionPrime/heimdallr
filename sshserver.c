@@ -4,6 +4,7 @@
 #include "sshserver.h"
 #include <libssh/libssh.h>
 #include <libssh/server.h>
+#include <errno.h>
 
 ssh_session session;
 ssh_bind sshbind;
@@ -67,7 +68,7 @@ int process_client() {
 	/* proceed to authentication */
 	auth = authenticate(&con);
 	if(!auth){
-		printf("Authentication error: %s\n", ssh_get_error(session));
+		printf("Authentication failed (probably tried to use ssh-keys): %s\n", ssh_get_error(session));
 		ssh_disconnect(session);
 		return 1;
 	}
@@ -96,13 +97,14 @@ int process_client() {
 	}
 
 	do {
+		message = ssh_message_get(session);
 		if(message != NULL) {
 			if(ssh_message_type(message) == SSH_REQUEST_CHANNEL) {
 				if (ssh_message_subtype(message) == SSH_CHANNEL_REQUEST_EXEC){
 					exec = 1;
 					ssh_message_channel_request_reply_success(message);
 					ssh_message_free(message);
-					continue;
+					break;
 				}
 			}
 			ssh_message_reply_default(message);
@@ -127,7 +129,6 @@ int process_client() {
 	}
 
 	ssh_disconnect(session);
-
 	return 0;
 }
 
@@ -141,9 +142,6 @@ int authenticate(struct connection *c) {
 			case SSH_REQUEST_AUTH:
 				switch(ssh_message_subtype(message)){
 					case SSH_AUTH_METHOD_PASSWORD:
-						printf("User %s wants to auth with pass %s\n",
-							ssh_message_auth_user(message),
-							ssh_message_auth_password(message));
 						// authentication is nothing we care about
 						ssh_message_auth_reply_success(message,0);
 						ssh_message_free(message);
@@ -171,7 +169,42 @@ int authenticate(struct connection *c) {
 }
 
 int ReadExec(ssh_channel chan, void *vptr, int maxlen) {
-	return 0;
+	int n, rc,ctr;
+	char    c, *buffer;
+	buffer = vptr;
+
+	for ( n = 1; n < maxlen; n++ ) {
+		if ( (rc = ssh_channel_read(chan, &c, 1, 0)) == 1 ) {
+
+			if(ctr > 0){
+				ctr = ctr +1;
+			}
+			if(ctr > 3){
+				ctr = 0;
+			}
+
+			if ( c == '\r' || c == '\n' ){
+				break;
+			}
+			if(c != '\r' || c != '\n' || c != '\0'){
+				*buffer++ = c;
+			}
+			if ( c == '\r' ){
+				break;
+			}
+		} else if ( rc == 0 ) {
+			if ( n == 1 )
+				return 0;
+			else
+				break;
+		} else {
+			if ( errno == EINTR )
+			continue;
+			return -1;
+		}
+	}
+	*buffer = 0;
+	return n;
 }
 
 int show_content(struct connection *c, char* command) {
