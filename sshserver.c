@@ -68,7 +68,6 @@ int process_client() {
 	/* proceed to authentication */
 	auth = authenticate(&con);
 	if(!auth){
-		printf("Authentication failed (probably tried to use ssh-keys): %s\n", ssh_get_error(session));
 		ssh_disconnect(session);
 		return 1;
 	}
@@ -143,13 +142,11 @@ int authenticate(struct connection *c) {
 			case SSH_REQUEST_AUTH:
 				switch(ssh_message_subtype(message)){
 					case SSH_AUTH_METHOD_INTERACTIVE:
-						printf("\nintercative\n");
 						ssh_message_auth_reply_success(message,0);
 						ssh_message_free(message);
 						return 1;
 					case SSH_AUTH_METHOD_NONE:
 					default:
-						// TODO this should be replaced with the above
 						ssh_message_auth_set_methods(message,
 							SSH_AUTH_METHOD_INTERACTIVE);
 						ssh_message_reply_default(message);
@@ -158,7 +155,6 @@ int authenticate(struct connection *c) {
 				break;
 				default:
 				ssh_message_auth_set_methods(message,
-					SSH_AUTH_METHOD_PASSWORD |
 					SSH_AUTH_METHOD_INTERACTIVE);
 				ssh_message_reply_default(message);
 		}
