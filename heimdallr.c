@@ -3,6 +3,7 @@
 #include <curl/curl.h>
 #include <string.h>
 #include <json-c/json.h>
+#include <getopt.h>
 
 struct MemoryStruct {
 	char *memory;
@@ -81,7 +82,7 @@ void get_keys(const char *username)
 			return;
 		}
 		curl_easy_setopt(curl, CURLOPT_URL, built_url); 
-                curl_easy_setopt(curl, CURLOPT_USERAGENT, "Kraken/1.0");
+                curl_easy_setopt(curl, CURLOPT_USERAGENT, "heimdallr/1.0");
                 curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
                 
                 // set wmcallback as writefunction and chunk as target
@@ -174,28 +175,41 @@ int find_user(char *name)
 
 
 int main(int argc, char *argv[]){
-	if (1 == argc)
-		synopsys("heimdallr");
-	while ((argc > 1) && ('-' == argv[1][0])){
-		switch (argv[1][1])
+	int runmode = -1;
+	int option = 0;
+	char *username;
+	while ((option = getopt(argc, argv,"hVs:u:")) != -1) {
+		switch (option)
 		{
 			case 's':
-				find_user(&argv[2][0]);
-				break;
 			case 'u':
-				get_keys(&argv[2][0]);
-				break;
+				username = strdup(optarg);
 			case 'h':
-				help();
 			case 'V':
-				printf("Version: %s\n", VERSION);
+				runmode = option;
 				break;
 			default:
 				printf("Error: Unknown parameter.\nTake a look into 'heimdallr -h':\n");
 				synopsys("heimdallr");
+				exit(EXIT_FAILURE);
 		}
-		++argv;
-		--argc;
 	}
+	switch (runmode) {
+		case 's':
+			find_user(username);
+			break;
+		case 'u':
+			get_keys(username);
+			break;
+		case 'h':
+			help();
+			break;
+		case 'V':
+			printf("Version: %s\n", VERSION);
+			break;
+		default:
+			synopsys("heimdallr");
+	}
+	free(username);
 	return EXIT_SUCCESS;
 }
