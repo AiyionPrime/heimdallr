@@ -4,6 +4,8 @@
 #include "github.h"
 #include "sshserver.h"
 #include <unistd.h>
+#include <getopt.h>
+#include <string.h>
 
 
 void synopsys(char * cmd)
@@ -24,6 +26,7 @@ void help(void)
 }
 
 int main(int argc, char *argv[]){
+	int port = -1;
 	int conf_available = ensure_config_dir();
 	if (!conf_available){
 		printf("Info: Could not find config directory, crating one under '~/.config/heimdallr'.\n");
@@ -38,37 +41,52 @@ int main(int argc, char *argv[]){
 		generate_key();
 	}
 
-	int port = -1;
-	if (1 == argc)
-		synopsys("heimdallr");
-	while ((argc > 1) && ('-' == argv[1][0])){
-		switch (argv[1][1])
-		{
-			case 's':
-				find_user(&argv[2][0]);
-				break;
-			case 'u':
-				get_keys(&argv[2][0]);
-				break;
+        int runmode = -1;
+        int option = 0;
+        char *username;
+        while ((option = getopt(argc, argv,"hVs:u:p:")) != -1) {
+                switch (option)
+                {
 			case 'p':
-				if ((port = valid_port(&argv[2][0])) < 0) {
-					printf("Error: The given port is invalid. Valid ones are between %d and %d.\n", MINPORT, MAXPORT);
-					return EXIT_FAILURE;
-				}
-				run_ssh_server(port);
+				port = valid_port(optarg);
+				runmode = option;
 				break;
-			case 'h':
-				help();
+                        case 's':
+                        case 'u':
+                                username = strdup(optarg);
+                        case 'h':
+                        case 'V':
+                                runmode = option;
                                 break;
-			case 'V':
-				printf("Version: %s\n", VERSION);
-				break;
-			default:
-				printf("Error: Unknown parameter.\nTake a look into 'heimdallr -h':\n");
-				synopsys("heimdallr");
-		}
-		++argv;
-		--argc;
-	}
-	return EXIT_SUCCESS;
+                        default:
+                                printf("Error: Unknown parameter.\nTake a look into 'heimdallr -h':\n");
+                                synopsys("heimdallr");
+                                exit(EXIT_FAILURE);
+                }
+        }
+        switch (runmode) {
+		case 'p':
+			if (0 > port) {
+				printf("Error: The given port is invalid. Valid ones are between %d and %d.\n", MINPORT, MAXPORT);
+				return EXIT_FAILURE;
+			}
+			run_ssh_server(port);
+			break;
+                case 's':
+                        find_user(username);
+                        break;
+                case 'u':
+                        get_keys(username);
+                        break;
+                case 'h':
+                        help();
+                        break;
+                case 'V':
+                        printf("Version: %s\n", VERSION);
+                        break;
+                default:
+                        synopsys("heimdallr");
+        }
+        free(username);
+        return EXIT_SUCCESS;
 }
