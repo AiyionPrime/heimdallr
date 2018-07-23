@@ -105,9 +105,9 @@ void get_keys(const char *username)
 			}else{
 				printf("Error: User was not found.\n");
 			}
+			json_object_put(jobj);
 		}
 	}
-	json_object_put(jobj);
 	curl_easy_cleanup(curl);
 	free(chunk.memory);
 	free(built_url);
@@ -164,8 +164,8 @@ int find_user(char *name)
 			}
 			target = ensure_input(arraylen);
 			get_keys(json_object_get_string(json_object_object_get(json_object_array_get_idx(returnObj, target), "login")));
+			json_object_put(jobj);
 		}
-		json_object_put(jobj);
 		curl_easy_cleanup(curl);
 		free(url);
 		free(chunk.memory);
