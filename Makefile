@@ -1,6 +1,6 @@
 PREFIX = /usr
 
-CXX = gcc
+CC = gcc
 CFLAGS = -Wall -Werror -DVERSION=\"$(GIT_VERSION)\"
 
 LDLIBS = -lcurl -ljson-c
@@ -16,7 +16,7 @@ GIT_VERSION := $(shell git describe --dirty --always --tags)
 all: build
 
 build: $(SOURCES) compiler_flags
-	$(CXX) -o $(OUT) $(INCLUDE) $(CFLAGS) $(LDFLAGS) $(SOURCES) $(LDLIBS)
+	$(CC) -o $(OUT) $(INCLUDE) $(CFLAGS) $(LDFLAGS) $(SOURCES) $(LDLIBS)
 
 .PHONY: clean
 clean:
