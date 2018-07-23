@@ -3,7 +3,9 @@
 finding public ssh keys with ease
 
 
-This tool is intended to find developers public keys on github, were they may've left them.
+This tool is intended to get developers public keys
+* via a limited ssh-server on the local host (which can be accessed by ssh-copy-id)
+* or by fetching them from github, were the developers may've left them.
 
 ## Getting Started
 
@@ -39,6 +41,25 @@ Take a look at eg. my pubkey(s), by calling heimdallr with the user flag
 ```
 ./heimdallr -u aiyionprime
 ```
+
+Alternatively start an ssh-server (eg. on port 1234), which others can fill with pubkeys via ssh-copy-id:
+
+```
+./heimdallr -p 1234
+```
+
+Your coworkers can then use ssh-copy-id like they would with ordinary ssh-servers:
+
+```
+ssh-copy-id -p 1234 <the-ip-of-your-device>
+```
+
+Hint: You can list your current IPs with
+
+```
+hostname -i
+```
+
 
 ## Deployment
 
