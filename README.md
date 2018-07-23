@@ -9,7 +9,7 @@ This tool is intended to get developers public keys
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project running on your local machine, for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
 
 ### Prerequisites
 
@@ -21,7 +21,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
+A step by step series of examples that tells you, how to get a development env running.
 
 clone this repo
 
@@ -42,13 +42,13 @@ Take a look at eg. my pubkey(s), by calling heimdallr with the user flag
 ./heimdallr -u aiyionprime
 ```
 
-Alternatively start an ssh-server (eg. on port 1234), which others can fill with pubkeys via ssh-copy-id:
+Alternatively start a ssh-server (eg. on port 1234), which others can fill with pubkeys via `ssh-copy-id`:
 
 ```
 ./heimdallr -p 1234
 ```
 
-Your coworkers can then use ssh-copy-id like they would with ordinary ssh-servers:
+Your coworkers can then use `ssh-copy-id` like they would do with ordinary ssh-servers:
 
 ```
 ssh-copy-id -p 1234 <the-ip-of-your-device>
@@ -65,7 +65,7 @@ hostname -i
 
 #### From source
 
-Deploying this on a live system can be done by running the build steps followed by
+Deploying this on a live system can be done by running the [build steps](#installing) followed by
 
 ```
 sudo make install
@@ -98,5 +98,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-* Thanks to all testers!
+* Thanks to all testers and reviewers!
 * Props to ubuntus developers for using the same mechanism in their installer for bionic beaver.
