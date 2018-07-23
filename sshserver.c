@@ -15,7 +15,7 @@ int run_ssh_server(int port){
 	session = ssh_new();
 	ssh_options_set(session, SSH_OPTIONS_TIMEOUT, &timeout);
 	sshbind = ssh_bind_new();
-	ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_BINDADDR, LISTENADDRESS);
+	ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_BINDADDR, "0.0.0.0");
 	ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_BINDPORT, &port);
 	ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_HOSTKEY, "ssh-rsa");
 	const char *key_path = getpath("private.pem");
@@ -104,7 +104,7 @@ int process_client() {
 					exec = 1;
 					ssh_message_channel_request_reply_success(message);
 					ssh_message_free(message);
-					break;
+					continue;
 				}
 			}
 			ssh_message_reply_default(message);
@@ -113,6 +113,7 @@ int process_client() {
 			break;
 		}
 	} while(!exec);
+
 
 	if (exec) {
 		if ((i = ReadExec(chan, buffer, 1024)) > 0){
@@ -141,8 +142,8 @@ int authenticate(struct connection *c) {
 		switch(ssh_message_type(message)){
 			case SSH_REQUEST_AUTH:
 				switch(ssh_message_subtype(message)){
-					case SSH_AUTH_METHOD_PASSWORD:
-						// authentication is nothing we care about
+					case SSH_AUTH_METHOD_INTERACTIVE:
+						printf("\nintercative\n");
 						ssh_message_auth_reply_success(message,0);
 						ssh_message_free(message);
 						return 1;
@@ -150,7 +151,6 @@ int authenticate(struct connection *c) {
 					default:
 						// TODO this should be replaced with the above
 						ssh_message_auth_set_methods(message,
-							SSH_AUTH_METHOD_PASSWORD |
 							SSH_AUTH_METHOD_INTERACTIVE);
 						ssh_message_reply_default(message);
 						break;
@@ -175,14 +175,12 @@ int ReadExec(ssh_channel chan, void *vptr, int maxlen) {
 
 	for ( n = 1; n < maxlen; n++ ) {
 		if ( (rc = ssh_channel_read(chan, &c, 1, 0)) == 1 ) {
-
 			if(ctr > 0){
 				ctr = ctr +1;
 			}
 			if(ctr > 3){
 				ctr = 0;
 			}
-
 			if ( c == '\r' || c == '\n' ){
 				break;
 			}
@@ -199,7 +197,7 @@ int ReadExec(ssh_channel chan, void *vptr, int maxlen) {
 				break;
 		} else {
 			if ( errno == EINTR )
-			continue;
+				continue;
 			return -1;
 		}
 	}
@@ -208,7 +206,7 @@ int ReadExec(ssh_channel chan, void *vptr, int maxlen) {
 }
 
 int show_content(struct connection *c, char* command) {
-    printf("%s:\n%s\n", c->client_ip, command);
+    printf("%s\n", command);
     return 0;
 }
 
