@@ -77,9 +77,10 @@ int generate_key()
 	bp_private = BIO_new_file(key_path, "w+");
 	ret = PEM_write_bio_RSAPrivateKey(bp_private, r, NULL, NULL, 0, NULL, NULL);
 
+	free(key_path);
+
 	free_all:
 
-	free(key_path);
 	BIO_free_all(bp_public);
 	BIO_free_all(bp_private);
 	RSA_free(r);
