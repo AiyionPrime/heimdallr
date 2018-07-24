@@ -11,6 +11,7 @@
 
 
 int valid_port(char *p) {
+	errno = 0;
 	char *endptr;
 	int port;
 
