@@ -74,9 +74,11 @@ int main(int argc, char *argv[]){
 			break;
                 case 's':
                         find_user(username);
+			free(username);
                         break;
                 case 'u':
                         get_keys(username);
+			free(username);
                         break;
                 case 'h':
                         help();
@@ -87,6 +89,5 @@ int main(int argc, char *argv[]){
                 default:
                         synopsys("heimdallr");
         }
-        free(username);
         return EXIT_SUCCESS;
 }
