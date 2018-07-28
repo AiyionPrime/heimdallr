@@ -14,6 +14,8 @@ struct connection {
 
 int run_ssh_server(int port);
 
+void free_glob(void);
+
 int process_client();
 
 int authenticate(struct connection *c);

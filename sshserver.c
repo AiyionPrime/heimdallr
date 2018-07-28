@@ -5,11 +5,15 @@
 #include <libssh/libssh.h>
 #include <libssh/server.h>
 #include <errno.h>
+#include <signal.h>
 
 ssh_session session;
 ssh_bind sshbind;
 
 int run_ssh_server(int port){
+
+	signal(SIGINT, (void(*)())free_glob);
+
 	int timeout = 30;
 
 	session = ssh_new();
@@ -46,6 +50,14 @@ int run_ssh_server(int port){
 		}
 	}
 	return EXIT_SUCCESS;
+}
+
+void free_glob(void){
+	ssh_disconnect(session);
+	ssh_free(session);
+	ssh_bind_free(sshbind);
+	ssh_finalize();
+	exit(EXIT_SUCCESS);
 }
 
 int process_client() {
