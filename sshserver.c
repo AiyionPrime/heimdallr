@@ -80,11 +80,11 @@ int process_client() {
 	/* proceed to authentication */
 	auth = authenticate(&con);
 	if(!auth){
-		ssh_disconnect(session);
+		ssh_disconnect(con.session);
 		return 1;
 	}
 	do {
-		message = ssh_message_get(session);
+		message = ssh_message_get(con.session);
 		if(message){
 			if(ssh_message_type(message) == SSH_REQUEST_CHANNEL_OPEN
 			&& ssh_message_subtype(message) == SSH_CHANNEL_SESSION) {
@@ -102,13 +102,13 @@ int process_client() {
 
 	if(!chan) {
 		printf("Error: Client did not ask for a channel session (%s)\n",
-		ssh_get_error(session));
+		ssh_get_error(con.session));
 		ssh_finalize();
 		return 1;
 	}
 
 	do {
-		message = ssh_message_get(session);
+		message = ssh_message_get(con.session);
 		if(message != NULL) {
 			if(ssh_message_type(message) == SSH_REQUEST_CHANNEL) {
 				if (ssh_message_subtype(message) == SSH_CHANNEL_REQUEST_EXEC){
@@ -139,8 +139,7 @@ int process_client() {
 			return 0;
 		}
 	}
-
-	ssh_disconnect(session);
+	ssh_disconnect(con.session);
 	return 0;
 }
 
