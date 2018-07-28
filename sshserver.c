@@ -22,12 +22,13 @@ int run_ssh_server(int port){
 	ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_BINDADDR, "0.0.0.0");
 	ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_BINDPORT, &port);
 	ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_HOSTKEY, "ssh-rsa");
-	const char *key_path = getpath("private.pem");
+	char *key_path = getpath("private.pem");
 	ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_RSAKEY,key_path);
 
 	// bind to the given port
 	if (ssh_bind_listen(sshbind) < 0) {
 		printf("Error listening to socket: %s\n", ssh_get_error(sshbind));
+		free(key_path);
 		return -1;
 	}
 
