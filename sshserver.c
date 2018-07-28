@@ -176,7 +176,7 @@ int authenticate(struct connection *c) {
 }
 
 int ReadExec(ssh_channel chan, void *vptr, int maxlen) {
-	int n, rc,ctr;
+	int n=0, rc=0, ctr=0;
 	char    c, *buffer;
 	buffer = vptr;
 
