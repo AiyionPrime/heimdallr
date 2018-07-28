@@ -16,8 +16,6 @@ int run_ssh_server(int port){
 
 	int timeout = 30;
 
-	session = ssh_new();
-	ssh_options_set(session, SSH_OPTIONS_TIMEOUT, &timeout);
 	sshbind = ssh_bind_new();
 	ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_BINDADDR, "0.0.0.0");
 	ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_BINDPORT, &port);
@@ -34,6 +32,12 @@ int run_ssh_server(int port){
 
 	// wait for incoming connections for forever
 	while (1) {
+		session = ssh_new();
+		if (session == NULL) {
+			fprintf(stderr, "Failed to allocate session\n");
+			continue;
+		}
+		ssh_options_set(session, SSH_OPTIONS_TIMEOUT, &timeout);
 		if (ssh_bind_accept(sshbind, session) == SSH_ERROR) {
 			printf("Error: Connection could not get accepted: '%s'.\n",ssh_get_error(sshbind));
 			return -1;
@@ -44,12 +48,19 @@ int run_ssh_server(int port){
 				exit(-1);
 
 			case 0:
-				exit(process_client());
+				process_client();
+				ssh_disconnect(session);
+				ssh_free(session);
+				exit(0);
 
 			default:
 				break;
 		}
+		ssh_disconnect(session);
+		ssh_free(session);
 	}
+	ssh_bind_free(sshbind);
+	ssh_finalize();
 	return EXIT_SUCCESS;
 }
 
