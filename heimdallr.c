@@ -36,10 +36,11 @@ int main(int argc, char *argv[]){
 			return EXIT_FAILURE;
 		}
 	}
-	const char *key_path = getpath("private.pem");
+	char *key_path = getpath("private.pem");
 	if( !(access(( key_path), F_OK ) != -1 )) {
 		generate_key();
 	}
+	free(key_path);
 
         int runmode = -1;
         int option = 0;
