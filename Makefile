@@ -28,9 +28,13 @@ install-bin: build
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
 	cp $(OUT) $(DESTDIR)$(PREFIX)/bin/$(OUT)
 
-.PHONY: install-doc
-install-doc:
+.PHONY: doc
+doc:
 	gzip -c man/$(MAN) > heimdallr.1.gz
+
+
+.PHONY: install-doc
+install-doc: doc
 	cp $(MAN).gz $(DESTDIR)$(PREFIX)/share/man/man1/
 
 .PHONY: install
