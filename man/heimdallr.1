@@ -1,0 +1,56 @@
+.TH HEIMDALLR 1
+.SH NAME
+heimdallr \- find public ssh keys with ease
+.SH SYNOPSIS
+.B heimdallr
+.RB "[" "-u"
+.IR "username" "] |"
+.RB "[" "-s"
+.IR "username" "] |"
+.RB "[" "-p"
+.IR "port" "] |"
+.RB "[" "-h" "] |"
+.RB "[" "-V" "]"
+
+.SH DESCRIPTION
+.B heimdallr
+starts a ssh-server in order to be able to receive others' public keys via use of ssh-copy-id.
+
+It is also able to fetch previously released public keys from github either by specification or search of an username.
+.SH OPTIONS
+.TP
+.B "-h"
+Show a short overview of the available commands.
+.TP
+.BI "-p" " port"
+Open a ssh-server on the specified port. 
+The ssh-server is not interpreting given commands, but shows the output on the terminal.
+.RB "The other side has to run ssh-copy-id with the same port specified and the ip of the machne running " "heimdallr" "."
+.TP
+.BI "-s" " username"
+Search for the given username on GitHub.
+Show all results to choose one from them interactively.
+Perform another request to the GitHub API to  show all released public keys for the chosen account.
+.TP
+.BI "-u" " username"
+Use the GitHub API in order to show all released public keys for the given GitHub account.
+.TP
+.B "-V"
+Show the current version.
+
+.SH FILES
+.TP
+.I "~/.config/heimdallr"
+.RB "The directory in which " "heimdallr" " stores its own private key, which prevents leaking the own public key of the administrator."
+	
+
+.SH AUTHOR
+aiyion (heimdallr@aiyionpri.me)
+
+A big thanks to everybody who has helped getting bugs out of this project.
+
+.SH SEE ALSO
+.BR "ssh-copy-id" "(1), " "libcurl" "(3), " "ssl" "(7)"
+
+.SH AVAILABILITY
+.BR "heimdallr" " is available on the aur as heimdallr-git. The latest versions are available in source form at https://github.com/AiyionPrime/heimdallr."

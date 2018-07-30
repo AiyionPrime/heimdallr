@@ -7,6 +7,7 @@ LDLIBS = -lcurl -ljson-c -lcrypto -lssh
 #LDFLAGS = -Lusr/local/lib 
 #INCLUDE = -Iusr/local/include
 
+MAN = heimdallr.1
 SOURCES = heimdallr.c config.c sshserver.c github.c
 OUT = heimdallr
 OBJ = $(src:.c=.o)
@@ -20,16 +21,25 @@ build: $(SOURCES) compiler_flags
 
 .PHONY: clean
 clean:
-	rm -f $(OBJ) $(OUT)
+	rm -f $(OBJ) $(OUT) $(MAN).gz
+
+.PHONY: install-bin
+install-bin: build
+	mkdir -p $(DESTDIR)$(PREFIX)/bin
+	cp $(OUT) $(DESTDIR)$(PREFIX)/bin/$(OUT)
+
+.PHONY: install-doc
+install-doc:
+	gzip -c man/$(MAN) > heimdallr.1.gz
+	cp $(MAN).gz $(DESTDIR)$(PREFIX)/share/man/man1/
 
 .PHONY: install
-install: heimdallr
-	mkdir -p $(DESTDIR)$(PREFIX)/bin
-	cp $< $(DESTDIR)$(PREFIX)/bin/$(OUT)
+install: install-bin install-doc
 
 .PHONY: uninstall
 uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/$(OUT)
+	rm -f $(DESTDIR)$(PREFIX)/share/man/man1/$(MAN).gz
 
 .PHONY: force
 compiler_flags: force
