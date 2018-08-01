@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <json-c/json.h>
 #ifndef GITHUB_HEIMDALLR_H_
 #define GITHUB_HEIMDALLR_H_
 
@@ -11,7 +12,7 @@ int ensure_input(int options);
 
 int find_user(char *name);
 
-void get_keys(const char *username);
+int get_keys(const char *username);
 
 size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp);
 
