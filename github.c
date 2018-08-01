@@ -17,6 +17,15 @@ int ensure_input(int options)
 	return input;
 }
 
+/*
+ * Function: fetch_jobj
+ *
+ * run a curl request against a json-based api and get the json_object
+ *
+ * url: a string containing the target url
+ *
+ * returns: the pointer to a json_object struct
+ */
 
 struct json_object* fetch_jobj(char *url)
 {
@@ -49,6 +58,16 @@ struct json_object* fetch_jobj(char *url)
 	return jobj;
 }
 
+/*
+ * Function: get_keys
+ *
+ * prints all public keys a given user has uploaded to GitHub, using GitHubs API
+ *
+ * username: a string holding a (hopefully) valid GitHub username
+ *
+ * returns: an integer, whether the functions ran into memory issues 
+ */
+
 int get_keys(const char *username)
 {       
 	char *key_url = "https://api.github.com/users/%s/keys";
@@ -67,7 +86,7 @@ int get_keys(const char *username)
 
 	jobj = fetch_jobj(built_url);
 	jtype = json_object_get_type(jobj);
-	if (json_type_array == jtype)i{
+	if (json_type_array == jtype){
 		arraylen = json_object_array_length(jobj);
 		for (int i=0; i<arraylen; i++){
 			tuplejobj = json_object_array_get_idx(jobj, i);
@@ -81,6 +100,17 @@ int get_keys(const char *username)
 	free(built_url);
 	return EXIT_SUCCESS;
 }
+
+/*
+ * Function: find_user
+ *
+ * searches for a GitHub username interactively and afterwords
+ * prints all public keys the chosen account has uploaded to GitHub, using GitHubs API
+ *
+ * username: a string holding a partial or similar username to an existing accountname, which will be looked up
+ *
+ * returns: an integer, whether the functions ran into memory issues 
+ */
 
 int find_user(char *name)
 {
@@ -116,6 +146,26 @@ int find_user(char *name)
 	free(url);
 	return EXIT_SUCCESS;
 }
+
+/*
+ * Function WriteMemoryCallback
+ *
+ * A callback function to stepwise increase the size of a memory struct by one, as needed,
+ * in order to store data of priorly unknown size in ram, primarily used for curl requests
+ * 
+ * in fact, the function creates a whole new MemoryStruct each time called just in order to
+ * seem like slowly increasing over time
+ *
+ * contents: a pointer to where the data will lie after the function call
+ *
+ * size: the size of one member in the MemoryStruct
+ *
+ * nmemb: the number of members in the MemoryStruct
+ *
+ * userp: the void pointer where the data lies
+ * 
+ * returns: the size of the data as size_t after inreasing it
+ */
 
 size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
