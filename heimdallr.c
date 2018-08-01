@@ -7,11 +7,25 @@
 #include <getopt.h>
 #include <string.h>
 
+/*
+ * Function: synopsys
+ *
+ * print a small synopsys on how to use this program
+ *
+ * cmd: the name of the command to launch this code
+ *      may depend on how the programm was started in the first place, like as installed or local instance
+ */
 
 void synopsys(char * cmd)
 {
         printf("Usage: %s [-u username|-s username|-p port|-h|-V]\n", cmd);
 }
+
+/*
+ * Function: help
+ *
+ * print a small synopsys, as well as a more detailled listing of parameters, and their meaning
+ */
 
 void help(void)
 {
@@ -24,6 +38,25 @@ void help(void)
 	printf("  %s -V to show the version\n", cmd);
 	exit(0);
 }
+
+/*
+ * Function: main
+ *
+ * creates a config directory and generates a ssh privatekey into it
+ * depending on the programs arguments it:
+ * - starts an open ssh server on a given port and waits for remote ssh-copy-id executions in order
+ *   to show the shipped ssh-keys in terminal; is meant to be stopped by ctrl+c
+ * - searches a given username on github interactively and shows ssh public keys of the user
+ * - fetches a given username from github and shows ssh public keys of the given oser
+ * - shows a help message
+ * - shows the current version
+ *
+ * argc: the amount of arguments given to the program
+ * 
+ * argv: a list of strings which were either the programs name, or arguments to run it
+ *
+ * returns: an int, which shows if the execution failed in general, or not.
+ */
 
 int main(int argc, char *argv[]){
 	int port = -1;

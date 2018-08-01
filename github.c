@@ -2,6 +2,17 @@
 #include <string.h>
 #include <curl/curl.h>
 
+/*
+ * Function: ensure_input
+ *
+ * asks the user to choose a number in range of zero and a given option amount
+ * repeats, if the input is invalid, until it's not
+ *
+ * options: the amount of options the user needs to choose from
+ *
+ * returns: the valid option the user has chosen at last
+ */
+
 int ensure_input(int options)
 {
 	int input=-1, temp, status;
@@ -65,7 +76,7 @@ struct json_object* fetch_jobj(char *url)
  *
  * username: a string holding a (hopefully) valid GitHub username
  *
- * returns: an integer, whether the functions ran into memory issues 
+ * returns: an integer, whether the function ran into memory issues 
  */
 
 int get_keys(const char *username)
@@ -105,7 +116,7 @@ int get_keys(const char *username)
  * Function: find_user
  *
  * searches for a GitHub username interactively and afterwords
- * prints all public keys the chosen account has uploaded to GitHub, using GitHubs API
+ * prints all public keys, the chosen account has uploaded to GitHub, using GitHubs API
  *
  * username: a string holding a partial or similar username to an existing accountname, which will be looked up
  *
