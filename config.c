@@ -16,7 +16,7 @@
  *
  * *p: the pointer to a string containing digits
  *
- * returns: the converted resulted from string to int, if the int result is beteen MINPORT and MAXPORT
+ * returns: the result from string to int conversion, if the int result is between MINPORT and MAXPORT
  *          if anything went wrong returns -1
  */
 
@@ -34,11 +34,11 @@ int valid_port(char *p) {
 /*
  * Function: homedir
  *
- * finds the fullpath of the currents users homedirectory
+ * finds the fullpath of the current user's homedirectory
  * reading the content of the environment variable 'HOME'
  * and if that fails, reading the result of getpwuid()
  *
- * returns: the home directories fullpath like '/home/foobar'
+ * returns: the home directories full path like '/home/foobar'
  */
 
 const char* homedir(){
@@ -52,12 +52,13 @@ const char* homedir(){
 /*
  * Function: getpath
  *
- * builds the full path from heimdallrs config directory and the given filename
+ * builds the full path from heimdallr's config directory and the given filename
  *
  * filename: the filename as string
  *
- * returns: the full path consisting of the current homedir,
+ * returns: the full path of a filename by concatenating the current homedir,
  *          the config folder, as well as the filename
+ *          like this: <homedir>/.config/heimdallr/<filename>
  */
 
 char* getpath(char* filename){
@@ -75,9 +76,9 @@ char* getpath(char* filename){
 /*
  * Function: ensure_config_dir
  *
- * creates the directory structure '<homedir>/.config/heidallr/' if it does not exists
+ * creates the directory structure '<homedir>/.config/heimdallr/', if it does not exist
  *
- * returns: 0 if it succeeded a larger number if not
+ * returns: 0 if it succeeded, a larger number if not
  */
 
 int ensure_config_dir(){
@@ -94,7 +95,7 @@ int ensure_config_dir(){
 /*
  * Function: generate_key
  *
- * creates a file containing a valid 2048 bit rsa-private key
+ * creates a file containing a valid 2048-bit rsa privatekey
  * in the config directory, using openssl
  *
  * this is done in order not to interact with the user-keys
