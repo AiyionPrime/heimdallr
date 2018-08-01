@@ -9,6 +9,16 @@
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
 
+/*
+ * Function: valid_port
+ *
+ * ensure the given string contains an integer between MINPORT and MAXPORT
+ *
+ * *p: the pointer to a string containing digits
+ *
+ * returns: the converted resulted from string to int, if the int result is beteen MINPORT and MAXPORT
+ * if anything went wrong returns -1
+ */
 
 int valid_port(char *p) {
 	errno = 0;
@@ -21,6 +31,16 @@ int valid_port(char *p) {
 	return -1;
 }
 
+/*
+ * Function: homedir
+ *
+ * finds the fullpath of the currents users homedirectory
+ * reading the content of the environment variable 'HOME'
+ * and if that fails, reading the result of getpwuid()
+ *
+ * returns: the home directories fullpath like '/home/foobar'
+ */
+
 const char* homedir(){
         const char *homedir;
         if ((homedir = getenv("HOME")) == NULL) {
@@ -28,6 +48,17 @@ const char* homedir(){
         }
         return homedir;
 }
+
+/*
+ * Function: getpath
+ *
+ * builds the full path from heimdallrs config directory and the given filename
+ *
+ * filename: the filename as string
+ *
+ * returns: the full path consisting of the current homedir,
+ *          the config folder, as well as the filename
+ */
 
 char* getpath(char* filename){
         char *relative_path = "/.config/heimdallr/";
@@ -41,6 +72,14 @@ char* getpath(char* filename){
         return fullpath;
 }
 
+/*
+ * ensure_config_dir
+ *
+ * creates the directory structure '<homedir>/.config/heidallr/' if it does not exists
+ *
+ * returns: 0 if it succeeded a larger number if not
+ */
+
 int ensure_config_dir(){
 	char *dir_path = getpath("");
 	int ret = mkdir(dir_path, S_IRWXU);
@@ -51,6 +90,17 @@ int ensure_config_dir(){
 	free(dir_path);
 	return ret;
 }
+
+/*
+ * generate_key
+ *
+ * creates a file containing a valid 2048 bit rsa-private key
+ * in the config directory, using openssl
+ *
+ * this is done in order not to interact with the user-keys
+ *
+ * returns: 1 if everything went well, 0 if not
+ */
 
 int generate_key()
 {
