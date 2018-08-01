@@ -17,7 +17,7 @@
  * *p: the pointer to a string containing digits
  *
  * returns: the converted resulted from string to int, if the int result is beteen MINPORT and MAXPORT
- * if anything went wrong returns -1
+ *          if anything went wrong returns -1
  */
 
 int valid_port(char *p) {
@@ -73,7 +73,7 @@ char* getpath(char* filename){
 }
 
 /*
- * ensure_config_dir
+ * Function: ensure_config_dir
  *
  * creates the directory structure '<homedir>/.config/heidallr/' if it does not exists
  *
@@ -92,7 +92,7 @@ int ensure_config_dir(){
 }
 
 /*
- * generate_key
+ * Function: generate_key
  *
  * creates a file containing a valid 2048 bit rsa-private key
  * in the config directory, using openssl
