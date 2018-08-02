@@ -17,7 +17,7 @@ int run_ssh_server(int port){
 	int timeout = 30;
 
 	sshbind = ssh_bind_new();
-	ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_BINDADDR, "0.0.0.0");
+	ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_BINDADDR, "::");
 	ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_BINDPORT, &port);
 	ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_HOSTKEY, "ssh-rsa");
 	char *key_path = getpath("private.pem");
