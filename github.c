@@ -9,12 +9,18 @@
  * repeats, if the input is invalid, until it's not
  *
  * options: the amount of options the user needs to choose from
+ *          (must be a positive integer)
  *
  * returns: the valid option the user has chosen at last
+ *          or -1 if the amount of options given is not a positive integer
  */
 
 int ensure_input(int options)
 {
+	if (options<1) {
+		printf("Error: there are no options.\n");
+		return -1;
+	}
 	int input=-1, temp, status;
 	while (input < 0 || input >= options){
 		printf("Specify a target in range [0..%i]:\n", options-1);
@@ -154,8 +160,12 @@ int find_user(char *name)
 		usernamejobj = json_object_object_get(userjobj, "login");
 		printf("%i: %s\n", i, json_object_get_string(usernamejobj));
 	}
-	target = ensure_input(arraylen);
-	get_keys(json_object_get_string(json_object_object_get(json_object_array_get_idx(returnObj, target), "login")));
+	if (arraylen>0){
+		target = ensure_input(arraylen);
+		get_keys(json_object_get_string(json_object_object_get(json_object_array_get_idx(returnObj, target), "login")));
+	} else {
+		printf("Info: could not find a user with a name similar to '%s'.\n", name);
+	}
 	json_object_put(jobj);
 	free(url);
 	return EXIT_SUCCESS;
