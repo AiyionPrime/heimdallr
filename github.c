@@ -138,15 +138,15 @@ int find_user(char *name)
 	struct json_object *returnObj;
 
 	int arraylen, target;
-	url = malloc(strlen(baseurl)+strlen(name)+1);
 
+	escaped_name = curl_escape(name, 0);
+	url = malloc(strlen(baseurl)+strlen(escaped_name)+1);
 
 	if (!url){
 		printf("Error, malloc failed; no memory available.\n");
 		return EXIT_FAILURE;
 	}
 	strcpy(url, baseurl);
-	escaped_name = curl_escape(name, 0);
 	strcat(url, escaped_name);
 	curl_free(escaped_name);
 
