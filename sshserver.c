@@ -6,6 +6,7 @@
 #include <libssh/server.h>
 #include <errno.h>
 #include <signal.h>
+#include <string.h>
 
 ssh_session session;
 ssh_bind sshbind;
@@ -15,9 +16,10 @@ int run_ssh_server(int port){
 	signal(SIGINT, (void(*)())free_glob);
 
 	int timeout = 30;
+	char * ip = "::";
 
 	sshbind = ssh_bind_new();
-	ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_BINDADDR, "::");
+	ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_BINDADDR, ip);
 	ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_BINDPORT, &port);
 	ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_HOSTKEY, "ssh-rsa");
 	char *key_path = getpath("private.pem");
@@ -30,6 +32,7 @@ int run_ssh_server(int port){
 		return -1;
 	}
 
+	print_remote_help(port, ip);
 	// wait for incoming connections for forever
 	while (1) {
 		session = ssh_new();
@@ -62,6 +65,26 @@ int run_ssh_server(int port){
 	ssh_bind_free(sshbind);
 	ssh_finalize();
 	return EXIT_SUCCESS;
+}
+
+/*
+ * Function: print_remote_help
+ *
+ * give a copiable line to the user, which he may pass to the remote machines owner
+ * if the ip address is the wildcard '::' replace its occurence with '<this machines ip>'
+ *
+ * port: the port on which the remote host should connect
+ *
+ * ip: the ip-address to which the remote host should connect
+ */
+
+void print_remote_help(int port, char * ip){
+	printf("remote command:\n");
+	if (strcmp(ip, "::")){
+		printf("ssh-copy-id -p %d %s\n", port, ip);
+	} else {
+		printf("ssh-copy-id -p %d <this machines ip>\n", port);
+	}
 }
 
 void free_glob(void){
