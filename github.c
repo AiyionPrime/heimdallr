@@ -127,6 +127,7 @@ int find_user(char *name)
 {
 	char *baseurl = "https://api.github.com/search/users?q=";
 	char *url;
+	char *escaped_name;
 	struct json_object *jobj = NULL, *userjobj, *usernamejobj;
 	struct json_object *returnObj;
 
@@ -139,7 +140,9 @@ int find_user(char *name)
 		return EXIT_FAILURE;
 	}
 	strcpy(url, baseurl);
-	strcat(url, name);
+	escaped_name = curl_escape(name, 0);
+	strcat(url, escaped_name);
+	curl_free(escaped_name);
 
 	jobj = fetch_jobj(url);
 	returnObj = json_object_object_get(jobj, "items");
