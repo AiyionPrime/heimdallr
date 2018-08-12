@@ -69,11 +69,18 @@ int main(int argc, char *argv[]){
 			return EXIT_FAILURE;
 		}
 	}
+	// ensure private key
 	char *key_path = getpath("private.pem");
 	if( !(access(( key_path), F_OK ) != -1 )) {
 		generate_key();
 	}
 	free(key_path);
+	// ensure public key
+	char *pub_path = getpath("public.pem");
+	if( !(access(( pub_path), F_OK ) != -1 )) {
+		generate_pubkey_from_private("private.pem");
+	}
+	free(pub_path);
 
         int runmode = -1;
         int option = 0;
