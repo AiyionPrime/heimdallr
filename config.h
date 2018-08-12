@@ -1,6 +1,8 @@
 #ifndef CONFIG_HEIMDALLR_H_
 #define CONFIG_HEIMDALLR_H_
 
+#include <libssh/libssh.h>
+
 #define MAXPORT 65535
 #define MINPORT 1
 

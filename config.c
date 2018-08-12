@@ -8,7 +8,6 @@
 #include <sys/stat.h>
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
-#include <libssh/libssh.h>
 
 /*
  * Function: valid_port
