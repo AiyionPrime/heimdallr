@@ -143,6 +143,63 @@ int generate_key()
 }
 
 /*
+ * Function: generate_pukey_from_private
+ *
+ * create a file containing a ssh public key in base64 format,
+ * based on a given private key file
+ *
+ * private: the filename of the private key within the configdirectory,
+ *          to read the details from
+ *
+ * returns; zero if everything went well; and one if not.
+ */
+
+int generate_pubkey_from_private(char * private){
+	char * pub_path;
+	char * key_path;
+
+	ssh_key privkey;
+	ssh_key pubkey;
+
+	pub_path = getpath("public.pem");
+	if (access(pub_path, F_OK) != -1){
+		// pubkey already exists, do nothing
+		free(pub_path);
+		return 0;
+	}
+
+	key_path = getpath("private.pem");
+	if (ssh_pki_import_privkey_file(key_path, NULL, NULL, NULL, &privkey) != SSH_OK){
+		free(pub_path);
+		free(key_path);
+		ssh_key_free(privkey);
+		return 1;
+
+	}
+	free(key_path);
+
+	if (SSH_OK != ssh_pki_export_privkey_to_pubkey(privkey, &pubkey)){
+		printf("Error: Could not generate public- from private-key file.\n");
+		free(pub_path);
+		ssh_key_free(privkey);
+		ssh_key_free(pubkey);
+		return 1;
+	}
+	ssh_key_free(privkey);
+
+	if (SSH_OK != ssh_pki_export_pubkey_file(pubkey, pub_path)){
+		printf("Error: Could not export the public key to file.\n");
+		free(pub_path);
+                ssh_key_free(pubkey);
+		return 1;
+	}
+
+	free(pub_path);
+	ssh_key_free(pubkey);
+	return 0;
+}
+
+/*
  * Function: ssh_pki_export_pubkey_file
  *
  * Export a public key to a file on disk in OpenSSH format.

@@ -14,6 +14,8 @@ int ensure_config_dir();
 
 int generate_key();
 
+int generate_pubkey_from_private(char * private);
+
 int ssh_pki_export_pubkey_file(const ssh_key pubkey, const char * filename);
 
 #endif //CONFIG_HEIMDALLR_H_
