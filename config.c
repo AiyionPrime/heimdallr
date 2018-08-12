@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
+#include <libssh/libssh.h>
 
 /*
  * Function: valid_port
@@ -139,4 +140,48 @@ int generate_key()
 	BN_free(bne);
 
 	return (ret == 1);
+}
+
+/*
+ * Function: ssh_pki_export_pubkey_file
+ *
+ * Export a public key to a file on disk in OpenSSH format.
+ *
+ * pubkey: the ssh_key handle
+ *
+ * filename: the path where to store the public-key-file
+ *
+ * returns: SSH_OK on success, SSH_ERROR on error
+ */
+
+int ssh_pki_export_pubkey_file(const ssh_key pubkey, const char * filename){
+	enum ssh_keytypes_e type;
+	char * b64;
+	char * keytype;
+
+	if(SSH_KEYTYPE_UNKNOWN == (type = ssh_key_type(pubkey))){
+		printf("Error: Could not determine the public keys type.\n");
+                return SSH_ERROR;
+	}
+	keytype = strdup(ssh_key_type_to_char(type));
+
+	if (SSH_OK != ssh_pki_export_pubkey_base64(pubkey, &b64)){
+		printf("Error: Could not export public key.\n");
+		ssh_string_free_char(keytype);
+		return SSH_ERROR;
+	}
+
+	FILE *fp = fopen(filename, "ab");
+	if (fp != NULL)
+	{
+		fputs(keytype, fp);
+		fputs(" ", fp);
+		fputs(b64, fp);
+		fputs("\n", fp);
+		fclose(fp);
+	}
+
+	ssh_string_free_char(b64);
+	ssh_string_free_char(keytype);
+	return SSH_OK;
 }
