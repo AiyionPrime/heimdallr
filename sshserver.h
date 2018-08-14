@@ -26,6 +26,10 @@ int ReadExec(ssh_channel chan, void *vptr, int maxlen);
 
 int show_content(struct connection *c, char* command);
 
+size_t calcDecodeLength(const char* b64input);
+
+int base64Decode(char* b64message, unsigned char** buffer, size_t* length);
+
 char *base64Encode(const unsigned char *input, int length);
 
 #endif //SSHSERVER_H_
