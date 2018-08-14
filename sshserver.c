@@ -258,6 +258,69 @@ int show_content(struct connection *c, char* command) {
 }
 
 /*
+ * Function: fingerprint
+ *
+ * calculates the sha256 fingerprint of a given public key file in OpenSSH format
+ *
+ * path: the path of a file holding a public key file in OpenSSH format
+ *
+ * returns: the string holding the fingerprint . Needs to be freed by the caller.
+ */
+
+char* fingerprint(const char * path){
+	char *fingerprint64;
+	unsigned char *fingerprint;
+	char last_ch=EOF, ch;
+	FILE *fp;
+	int maxlen = 16384+1;
+	int word=0;
+	int c=0;
+	char buf[16384+1]="";
+	size_t test, k;
+	unsigned char *d;
+	char *output_pad, *output_unpad;
+
+	// read pubkey base64 string into fingerprint64
+	fp = fopen(path, "r");
+	if (fp == NULL)
+	{
+		perror("Error while opening the file.\n");
+		exit(EXIT_FAILURE);
+	}
+	while((ch = fgetc(fp)) != '\n') {
+		if (last_ch!=' ' && ch == ' '){
+			word++;
+		} else if (last_ch == ' ' && ch == ' ') {
+			continue;
+		}
+		if (' ' != ch && 1 == word && c<maxlen){
+			buf[c]=ch;
+			c++;
+		}
+		last_ch = ch;
+	}
+	fclose(fp);
+	fingerprint64 = strdup(buf);
+
+	base64Decode(buf, &fingerprint, &test);
+	d = SHA256(fingerprint, calcDecodeLength(fingerprint64), 0);
+
+	// remove padding
+	output_pad = base64Encode(d, 32);
+	k=strlen(output_pad);
+	for (; output_pad[k-1]=='=';k--);
+	output_unpad = malloc(k+1);
+	strncpy(output_unpad, output_pad, k);
+	output_unpad[k] = '\0';
+
+	free(fingerprint);
+	free(fingerprint64);
+	free(output_pad);
+
+	return output_unpad;
+}
+
+/*
  * Function: calcDecodeLength
  * author:  john<at>nachtimwald<dot>com
  *
