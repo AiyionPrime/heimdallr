@@ -26,6 +26,8 @@ int ReadExec(ssh_channel chan, void *vptr, int maxlen);
 
 int show_content(struct connection *c, char* command);
 
+void print_fingerprint(const char * filename);
+
 char* fingerprint(const char * path);
 
 size_t calcDecodeLength(const char* b64input);

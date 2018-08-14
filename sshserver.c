@@ -92,6 +92,30 @@ void print_remote_help(int port, char * ip){
 	}
 }
 
+/*
+ * Function: print_fingerprint
+ *
+ * print the sha256 fingerprint of a ssh-public-key in OpenSSH format
+ *
+ * file: the filename of the public key within the config-directory to print
+ */
+
+void print_fingerprint(const char * filename){
+	char *pubpath;
+	char *sha256fp=NULL;
+	pubpath = getpath(filename);
+	if (NULL == (sha256fp = fingerprint(pubpath))){
+		printf("Warning: Could not determine the local pubkeys fingerprint.\n");
+		free(pubpath);
+		return;
+	}
+	free(pubpath);
+
+	printf("SHA256:%s\n", sha256fp);
+
+	free(sha256fp);
+}
+
 void free_glob(void){
 	ssh_disconnect(session);
 	ssh_free(session);
