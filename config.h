@@ -10,7 +10,7 @@ int valid_port(char *p);
 
 const char* homedir();
 
-char* getpath(char* filename);
+char* getpath(const char* filename);
 
 int ensure_config_dir();
 

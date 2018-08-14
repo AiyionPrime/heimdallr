@@ -61,7 +61,7 @@ const char* homedir(){
  *          like this: <homedir>/.config/heimdallr/<filename>
  */
 
-char* getpath(char* filename){
+char* getpath(const char* filename){
         char *relative_path = "/.config/heimdallr/";
         const char *home = homedir();
         int newlen = strlen(filename) + strlen(relative_path) + strlen(home) + 1;
