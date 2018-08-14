@@ -18,7 +18,7 @@
 
 void synopsys(char * cmd)
 {
-        printf("Usage: %s [-u username|-s username|-p port|-h|-V]\n", cmd);
+	printf("Usage: %s [-u username|-s username|-p port|-h|-V]\n", cmd);
 }
 
 /*
@@ -82,30 +82,30 @@ int main(int argc, char *argv[]){
 	}
 	free(pub_path);
 
-        int runmode = -1;
-        int option = 0;
-        char *username;
-        while ((option = getopt(argc, argv,"hVs:u:p:")) != -1) {
-                switch (option)
-                {
+	int runmode = -1;
+	int option = 0;
+	char *username;
+	while ((option = getopt(argc, argv,"hVs:u:p:")) != -1) {
+		switch (option)
+		{
 			case 'p':
 				port = valid_port(optarg);
 				runmode = option;
 				break;
-                        case 's':
-                        case 'u':
-                                username = strdup(optarg);
-                        case 'h':
-                        case 'V':
-                                runmode = option;
-                                break;
-                        default:
-                                printf("Error: Unknown parameter.\nTake a look into 'heimdallr -h':\n");
-                                synopsys("heimdallr");
-                                exit(EXIT_FAILURE);
-                }
-        }
-        switch (runmode) {
+			case 's':
+			case 'u':
+				username = strdup(optarg);
+			case 'h':
+			case 'V':
+				runmode = option;
+				break;
+			default:
+				printf("Error: Unknown parameter.\nTake a look into 'heimdallr -h':\n");
+				synopsys("heimdallr");
+				exit(EXIT_FAILURE);
+		}
+	}
+	switch (runmode) {
 		case 'p':
 			if (0 > port) {
 				printf("Error: The given port is invalid. Valid ones are between %d and %d.\n", MINPORT, MAXPORT);
@@ -113,22 +113,22 @@ int main(int argc, char *argv[]){
 			}
 			run_ssh_server(port);
 			break;
-                case 's':
-                        find_user(username);
+		case 's':
+			find_user(username);
 			free(username);
-                        break;
-                case 'u':
-                        get_keys(username);
+			break;
+		case 'u':
+			get_keys(username);
 			free(username);
-                        break;
-                case 'h':
-                        help();
-                        break;
-                case 'V':
-                        printf("Version: %s\n", VERSION);
-                        break;
-                default:
-                        synopsys("heimdallr");
-        }
-        return EXIT_SUCCESS;
+			break;
+		case 'h':
+			help();
+			break;
+		case 'V':
+			printf("Version: %s\n", VERSION);
+			break;
+		default:
+			synopsys("heimdallr");
+	}
+	return EXIT_SUCCESS;
 }

@@ -42,11 +42,11 @@ int valid_port(char *p) {
  */
 
 const char* homedir(){
-        const char *homedir;
-        if ((homedir = getenv("HOME")) == NULL) {
-                homedir = getpwuid(getuid())->pw_dir;
-        }
-        return homedir;
+	const char *homedir;
+	if ((homedir = getenv("HOME")) == NULL) {
+		homedir = getpwuid(getuid())->pw_dir;
+	}
+	return homedir;
 }
 
 /*
@@ -62,15 +62,15 @@ const char* homedir(){
  */
 
 char* getpath(const char* filename){
-        char *relative_path = "/.config/heimdallr/";
-        const char *home = homedir();
-        int newlen = strlen(filename) + strlen(relative_path) + strlen(home) + 1;
-        char *fullpath;
-        fullpath = (char *)calloc(sizeof(char), newlen);
-        strcat(fullpath, home);
-        strcat(fullpath, relative_path);
-        strcat(fullpath, filename);
-        return fullpath;
+	char *relative_path = "/.config/heimdallr/";
+	const char *home = homedir();
+	int newlen = strlen(filename) + strlen(relative_path) + strlen(home) + 1;
+	char *fullpath;
+	fullpath = (char *)calloc(sizeof(char), newlen);
+	strcat(fullpath, home);
+	strcat(fullpath, relative_path);
+	strcat(fullpath, filename);
+	return fullpath;
 }
 
 /*
@@ -189,7 +189,7 @@ int generate_pubkey_from_private(char * private){
 	if (SSH_OK != ssh_pki_export_pubkey_file(pubkey, pub_path)){
 		printf("Error: Could not export the public key to file.\n");
 		free(pub_path);
-                ssh_key_free(pubkey);
+		ssh_key_free(pubkey);
 		return 1;
 	}
 
@@ -217,7 +217,7 @@ int ssh_pki_export_pubkey_file(const ssh_key pubkey, const char * filename){
 
 	if(SSH_KEYTYPE_UNKNOWN == (type = ssh_key_type(pubkey))){
 		printf("Error: Could not determine the public keys type.\n");
-                return SSH_ERROR;
+		return SSH_ERROR;
 	}
 	keytype = strdup(ssh_key_type_to_char(type));
 

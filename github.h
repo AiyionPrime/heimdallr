@@ -4,8 +4,8 @@
 #define GITHUB_HEIMDALLR_H_
 
 struct MemoryStruct { 
-        char *memory; 
-        size_t size; 
+	char *memory;
+	size_t size;
 };
 
 int ensure_input(int options);
