@@ -38,6 +38,7 @@ int run_ssh_server(int port){
 	}
 
 	print_remote_help(port, ip);
+	print_fingerprint("public.pem");
 	// wait for incoming connections for forever
 	while (1) {
 		session = ssh_new();
