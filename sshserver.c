@@ -7,6 +7,10 @@
 #include <errno.h>
 #include <signal.h>
 #include <string.h>
+#include <openssl/bio.h>
+#include <openssl/evp.h>
+#include <openssl/sha.h>
+#include <openssl/buffer.h>
 
 ssh_session session;
 ssh_bind sshbind;
@@ -252,3 +256,35 @@ int show_content(struct connection *c, char* command) {
     return 0;
 }
 
+/*
+ * Function: base64Encode
+ *
+ * encodes given byte data into a base64 encoded string
+ *
+ * input: the unencoded byte data
+ *
+ * length: the length of the byte data, as it lacks a null terminator
+ *
+ * returns: the pointer to the base64 string. The caller needs to free it after using it.
+ */
+
+char *base64Encode(const unsigned char *input, int length)
+{
+	BIO *bmem, *b64;
+	BUF_MEM *bptr;
+
+	b64 = BIO_new(BIO_f_base64());
+	bmem = BIO_new(BIO_s_mem());
+	b64 = BIO_push(b64, bmem);
+	BIO_write(b64, input, length);
+	BIO_flush(b64);
+	BIO_get_mem_ptr(b64, &bptr);
+
+	char *buff = (char *)malloc(bptr->length);
+	memcpy(buff, bptr->data, bptr->length-1);
+	buff[bptr->length-1] = 0;
+
+	BIO_free_all(b64);
+
+	return buff;
+}
