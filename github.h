@@ -16,5 +16,7 @@ int get_keys(const char *username);
 
 size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp);
 
+void capped_amount_warning(int arraylength, int resultamount);
+
 #endif //GITHUB_HEIMDALLR_H_
 

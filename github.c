@@ -35,6 +35,23 @@ int ensure_input(int options)
 }
 
 /*
+ * Function: capped_amount_warning
+ *
+ * print a warning, if not all results are shown by find_users()
+ *
+ * arraylength: how many results are actually shown
+ *
+ * resultamount: how many results were found by a search
+ */
+
+void capped_amount_warning(int arraylength, int resultamount){
+	if(arraylength<resultamount){
+		printf("Warning: The search produced %d results, but only %d are shown.\n", resultamount, arraylength);
+		printf("         Please specify the search query to reduce the number.\n");
+	}
+}
+
+/*
  * Function: fetch_jobj
  *
  * run a curl request against a json-based api and get the json_object
@@ -135,9 +152,9 @@ int find_user(char *name)
 	char *url;
 	char *escaped_name;
 	struct json_object *jobj = NULL, *userjobj, *usernamejobj;
-	struct json_object *returnObj;
+	struct json_object *returnObj, *amountObj;
 
-	int arraylen, target;
+	int arraylen, target, resultamount;
 
 	escaped_name = curl_escape(name, 0);
 	url = malloc(strlen(baseurl)+strlen(escaped_name)+1);
@@ -152,8 +169,10 @@ int find_user(char *name)
 
 	jobj = fetch_jobj(url);
 	returnObj = json_object_object_get(jobj, "items");
+	amountObj = json_object_object_get(jobj, "total_count");
 
 	arraylen = json_object_array_length(returnObj);
+	resultamount = json_object_get_int(amountObj);
 
 	for (int i=0; i<arraylen; i++){
 		userjobj = json_object_array_get_idx(returnObj, i);
@@ -161,6 +180,7 @@ int find_user(char *name)
 		printf("%i: %s\n", i, json_object_get_string(usernamejobj));
 	}
 	if (arraylen>0){
+		capped_amount_warning(arraylen, resultamount);
 		target = ensure_input(arraylen);
 		get_keys(json_object_get_string(json_object_object_get(json_object_array_get_idx(returnObj, target), "login")));
 	} else {
