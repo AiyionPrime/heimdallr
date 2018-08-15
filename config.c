@@ -245,6 +245,45 @@ int ssh_pki_export_pubkey_file(const ssh_key pubkey, const char * filename){
 	return SSH_OK;
 }
 
+/*
+ * Function: ensure_private_key_permission
+ *
+ * Ensure advisable file permissions for the ssh private key (600)
+ *
+ * returns: zero if file has correct permissions 1 if not
+ */
+
+int ensure_private_key_permission(){
+	struct stat st;
+	char * path;
+	int ret, perm;
+
+	path = getpath("private.pem");
+	ret = stat(path, &st);
+	if(ret != 0) {
+		free(path);
+		return EXIT_FAILURE;
+	}
+	perm = st.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO);
+	if(perm == 0600) {
+		free(path);
+		return EXIT_SUCCESS;
+	}
+	print_permission_warning(path, perm);
+	free(path);
+	return EXIT_FAILURE;
+}
+
+/*
+ * Function: print_permission_warning
+ *
+ * file: the path of the file to warn about
+ *
+ * permission: the wrong permission
+ *
+ * print a warning in OpenSSH style regarding errorous permissions
+ */
+
 void print_permission_warning(char * file, int permission) {
 	printf(
 	"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
