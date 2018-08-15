@@ -81,6 +81,10 @@ int main(int argc, char *argv[]){
 		generate_pubkey_from_private("private.pem");
 	}
 	free(pub_path);
+	// check file permissions
+	if (ensure_private_key_permission()){
+		return EXIT_FAILURE;
+	}
 
 	int runmode = -1;
 	int option = 0;
