@@ -109,6 +109,7 @@ int generate_key()
 	RSA	*r = NULL;
 	BIGNUM	*bne = NULL;
 	BIO	*bp_public = NULL, *bp_private = NULL;
+	mode_t old_mask;
 
 	int		bits = 2048;
 	unsigned long	e = RSA_F4;
@@ -125,9 +126,11 @@ int generate_key()
 		goto free_all;
 	}
 
+	old_mask = umask(0177);
 	char *key_path = getpath("private.pem");
 	bp_private = BIO_new_file(key_path, "w+");
 	ret = PEM_write_bio_RSAPrivateKey(bp_private, r, NULL, NULL, 0, NULL, NULL);
+	umask(old_mask);
 
 	free(key_path);
 
