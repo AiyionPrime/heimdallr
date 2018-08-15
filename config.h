@@ -20,5 +20,7 @@ int generate_pubkey_from_private(char * private);
 
 int ssh_pki_export_pubkey_file(const ssh_key pubkey, const char * filename);
 
+void print_permission_warning(char * file, int permission);
+
 #endif //CONFIG_HEIMDALLR_H_
 

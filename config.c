@@ -244,3 +244,13 @@ int ssh_pki_export_pubkey_file(const ssh_key pubkey, const char * filename){
 	ssh_string_free_char(keytype);
 	return SSH_OK;
 }
+
+void print_permission_warning(char * file, int permission) {
+	printf(
+	"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
+	"@         WARNING: UNPROTECTED PRIVATE KEY FILE!          @\n"
+	"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
+	"Permissions %o for '%s' are too open.\n"
+	"It is required that your private key files are NOT accessible by others.\n"
+	"This private key will be ignored.\n", permission, file);
+}
