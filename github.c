@@ -17,20 +17,31 @@
 
 int ensure_input(int options)
 {
+	char *line = NULL;
+	size_t n;
+	int res;
 	if (options<1) {
 		printf("Error: there are no options.\n");
 		return -1;
 	}
-	int input=-1, temp, status;
+	int input=-1, status;
 	while (input < 0 || input >= options){
 		printf("Specify a target in range [0..%i]:\n", options-1);
-		status = scanf("%d", &input);
+		res = getline(&line, &n, stdin);
+		if (line[res - 1] == '\n'){
+			line[res-1] = '\0';
+		}
+		status = sscanf(line, "%d", &input);
 		while (status != 1){
-			while((temp=getchar()) != EOF && temp != '\n');
 			printf("Invalid Input.\nSpecify a target in range [0..%i]:\n", options-1);
-			status = scanf("%d", &input);
+			res = getline(&line, &n, stdin);
+			if (line[res - 1] == '\n'){
+				line[res-1] = '\0';
+			}
+			status = sscanf(line, "%d", &input);
 		}
 	}
+	free(line);
 	return input;
 }
 
