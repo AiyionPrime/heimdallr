@@ -117,6 +117,13 @@ void print_fingerprint(const char * filename){
 	free(sha256fp);
 }
 
+/*
+ * Function: free_glob
+ *
+ * cleans up the to globals ssh session and the bind
+ * is meant to be registered as interrupt handler
+ */
+
 void free_glob(void){
 	ssh_disconnect(session);
 	ssh_free(session);
