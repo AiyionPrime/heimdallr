@@ -52,7 +52,7 @@ void help(void)
  * - shows the current version
  *
  * argc: the amount of arguments given to the program
- * 
+ *
  * argv: a list of strings which were either the programs name, or arguments to run it
  *
  * returns: an int, which shows if the execution failed in general, or not.
@@ -61,11 +61,13 @@ void help(void)
 int main(int argc, char *argv[]){
 	int port = -1;
 	int conf_available = ensure_config_dir();
-	if (!conf_available){
-		printf("Info: Could not find config directory, crating one under '~/.config/heimdallr'.\n");
+	if (!conf_available) {
+		printf(
+			"Info: Could not find config directory, crating one under '~/.config/heimdallr'.\n");
 		conf_available = ensure_config_dir();
-		if (!conf_available){
-			printf("Error: Could not create config directory under '~/.config/heimdallr'.\n");
+		if (!conf_available) {
+			printf(
+				"Error: Could not create config directory under '~/.config/heimdallr'.\n");
 			return EXIT_FAILURE;
 		}
 	}
@@ -82,7 +84,7 @@ int main(int argc, char *argv[]){
 	}
 	free(pub_path);
 	// check file permissions
-	if (ensure_private_key_permission()){
+	if (ensure_private_key_permission()) {
 		return EXIT_FAILURE;
 	}
 
@@ -90,49 +92,50 @@ int main(int argc, char *argv[]){
 	int option = 0;
 	char *username;
 	while ((option = getopt(argc, argv,"hVs:u:p:")) != -1) {
-		switch (option)
-		{
-			case 'p':
-				port = valid_port(optarg);
-				runmode = option;
-				break;
-			case 's':
-			case 'u':
-				username = strdup(optarg);
-			case 'h':
-			case 'V':
-				runmode = option;
-				break;
-			default:
-				printf("Error: Unknown parameter.\nTake a look into 'heimdallr -h':\n");
-				synopsys("heimdallr");
-				exit(EXIT_FAILURE);
+		switch (option) {
+		case 'p':
+			port = valid_port(optarg);
+			runmode = option;
+			break;
+		case 's':
+		case 'u':
+			username = strdup(optarg);
+		case 'h':
+		case 'V':
+			runmode = option;
+			break;
+		default:
+			printf("Error: Unknown parameter.\nTake a look into 'heimdallr -h':\n");
+			synopsys("heimdallr");
+			exit(EXIT_FAILURE);
 		}
 	}
 	switch (runmode) {
-		case 'p':
-			if (0 > port) {
-				printf("Error: The given port is invalid. Valid ones are between %d and %d.\n", MINPORT, MAXPORT);
-				return EXIT_FAILURE;
-			}
-			run_ssh_server(port);
-			break;
-		case 's':
-			find_user(username);
-			free(username);
-			break;
-		case 'u':
-			get_keys(username);
-			free(username);
-			break;
-		case 'h':
-			help();
-			break;
-		case 'V':
-			printf("Version: %s\n", VERSION);
-			break;
-		default:
-			synopsys("heimdallr");
+	case 'p':
+		if (0 > port) {
+			printf(
+				"Error: The given port is invalid. Valid ones are between %d and %d.\n", MINPORT,
+				MAXPORT);
+			return EXIT_FAILURE;
+		}
+		run_ssh_server(port);
+		break;
+	case 's':
+		find_user(username);
+		free(username);
+		break;
+	case 'u':
+		get_keys(username);
+		free(username);
+		break;
+	case 'h':
+		help();
+		break;
+	case 'V':
+		printf("Version: %s\n", VERSION);
+		break;
+	default:
+		synopsys("heimdallr");
 	}
 	return EXIT_SUCCESS;
 }
