@@ -25,18 +25,18 @@ int ensure_input(int options)
 		return -1;
 	}
 	int input=-1, status;
-	while (input < 0 || input >= options){
+	while (input < 0 || input >= options) {
 		printf("Specify a target in range [0..%i]:\n", options-1);
 		res = getline(&line, &n, stdin);
-		if (line[res - 1] == '\n'){
+		if (line[res - 1] == '\n') {
 			line[res-1] = '\0';
 		}
 		status = sscanf(line, "%d", &input);
 		free(line);
-		while (status != 1){
+		while (status != 1) {
 			printf("Invalid Input.\nSpecify a target in range [0..%i]:\n", options-1);
 			res = getline(&line, &n, stdin);
-			if (line[res - 1] == '\n'){
+			if (line[res - 1] == '\n') {
 				line[res-1] = '\0';
 			}
 			status = sscanf(line, "%d", &input);
@@ -57,8 +57,9 @@ int ensure_input(int options)
  */
 
 void capped_amount_warning(int arraylength, int resultamount){
-	if(arraylength<resultamount){
-		printf("Warning: The search produced %d results, but only %d are shown.\n", resultamount, arraylength);
+	if(arraylength<resultamount) {
+		printf("Warning: The search produced %d results, but only %d are shown.\n",
+		       resultamount, arraylength);
 		printf("         Please specify the search query to reduce the number.\n");
 	}
 }
@@ -83,7 +84,7 @@ struct json_object* fetch_jobj(char *url)
 	struct json_object *jobj = NULL;
 
 	curl = curl_easy_init();
-	if(curl){
+	if(curl) {
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_USERAGENT, "Kraken/1.0");
 		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
@@ -92,9 +93,9 @@ struct json_object* fetch_jobj(char *url)
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 		res = curl_easy_perform(curl);
-		if(res != CURLE_OK){
+		if(res != CURLE_OK) {
 			fprintf(stderr, "Error: %s\n",
-			curl_easy_strerror(res));
+			        curl_easy_strerror(res));
 		} else {
 			jobj = json_tokener_parse(chunk.memory);
 		}
@@ -111,11 +112,11 @@ struct json_object* fetch_jobj(char *url)
  *
  * username: a string holding a (hopefully) valid GitHub username
  *
- * returns: an integer, whether the function ran into memory issues 
+ * returns: an integer, whether the function ran into memory issues
  */
 
 int get_keys(const char *username)
-{       
+{
 	char *key_url = "https://api.github.com/users/%s/keys";
 	int arraylen, jtype;
 	int new_len = strlen(username)+strlen(key_url)-2+1;
@@ -125,16 +126,16 @@ int get_keys(const char *username)
 	built_url = malloc(new_len * sizeof(char));
 	snprintf(built_url, new_len, key_url, username);
 
-	if (!built_url){
+	if (!built_url) {
 		printf("Error, malloc failed; no memory available.\n");
 		return EXIT_FAILURE;
 	}
 
 	jobj = fetch_jobj(built_url);
 	jtype = json_object_get_type(jobj);
-	if (json_type_array == jtype){
+	if (json_type_array == jtype) {
 		arraylen = json_object_array_length(jobj);
-		for (int i=0; i<arraylen; i++){
+		for (int i=0; i<arraylen; i++) {
 			tuplejobj = json_object_array_get_idx(jobj, i);
 			keyjobj = json_object_object_get(tuplejobj, "key");
 			printf("%s %s@github\n", json_object_get_string(keyjobj), username);
@@ -155,7 +156,7 @@ int get_keys(const char *username)
  *
  * username: a string holding a partial or similar username to an existing accountname, which will be looked up
  *
- * returns: an integer, whether the functions ran into memory issues 
+ * returns: an integer, whether the functions ran into memory issues
  */
 
 int find_user(char *name)
@@ -171,7 +172,7 @@ int find_user(char *name)
 	escaped_name = curl_escape(name, 0);
 	url = malloc(strlen(baseurl)+strlen(escaped_name)+1);
 
-	if (!url){
+	if (!url) {
 		printf("Error, malloc failed; no memory available.\n");
 		return EXIT_FAILURE;
 	}
@@ -186,15 +187,17 @@ int find_user(char *name)
 	arraylen = json_object_array_length(returnObj);
 	resultamount = json_object_get_int(amountObj);
 
-	for (int i=0; i<arraylen; i++){
+	for (int i=0; i<arraylen; i++) {
 		userjobj = json_object_array_get_idx(returnObj, i);
 		usernamejobj = json_object_object_get(userjobj, "login");
 		printf("%i: %s\n", i, json_object_get_string(usernamejobj));
 	}
-	if (arraylen>0){
+	if (arraylen>0) {
 		capped_amount_warning(arraylen, resultamount);
 		target = ensure_input(arraylen);
-		get_keys(json_object_get_string(json_object_object_get(json_object_array_get_idx(returnObj, target), "login")));
+		get_keys(json_object_get_string(json_object_object_get(json_object_array_get_idx(
+									       returnObj, target),
+		                                                       "login")));
 	} else {
 		printf("Info: could not find a user with a name similar to '%s'.\n", name);
 	}
@@ -208,7 +211,7 @@ int find_user(char *name)
  *
  * A callback function to stepwise increase the size of a memory struct by one, as needed,
  * in order to store data of priorly unknown size in ram, primarily used for curl requests
- * 
+ *
  * in fact, the function creates a whole new MemoryStruct each time called just in order to
  * seem like slowly increasing over time
  *
@@ -219,7 +222,7 @@ int find_user(char *name)
  * nmemb: the number of members in the MemoryStruct
  *
  * userp: the void pointer where the data lies
- * 
+ *
  * returns: the size of the data as size_t after inreasing it
  */
 
