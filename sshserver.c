@@ -18,7 +18,7 @@ ssh_bind sshbind;
 
 int run_ssh_server(int port){
 
-	signal(SIGINT, (void(*)())free_glob);
+	signal(SIGINT, (void (*)())free_glob);
 
 	int timeout = 30;
 	char * ip = "::";
@@ -48,22 +48,23 @@ int run_ssh_server(int port){
 		}
 		ssh_options_set(session, SSH_OPTIONS_TIMEOUT, &timeout);
 		if (ssh_bind_accept(sshbind, session) == SSH_ERROR) {
-			printf("Error: Connection could not get accepted: '%s'.\n",ssh_get_error(sshbind));
+			printf("Error: Connection could not get accepted: '%s'.\n",
+			       ssh_get_error(sshbind));
 			return -1;
 		}
 		switch (fork())  {
-			case -1:
-				fprintf(stderr, "Fork returned error: '%d'.\n", -1);
-				exit(-1);
+		case -1:
+			fprintf(stderr, "Fork returned error: '%d'.\n", -1);
+			exit(-1);
 
-			case 0:
-				process_client();
-				ssh_disconnect(session);
-				ssh_free(session);
-				exit(0);
+		case 0:
+			process_client();
+			ssh_disconnect(session);
+			ssh_free(session);
+			exit(0);
 
-			default:
-				break;
+		default:
+			break;
 		}
 		ssh_disconnect(session);
 		ssh_free(session);
@@ -86,7 +87,7 @@ int run_ssh_server(int port){
 
 void print_remote_help(int port, char * ip){
 	printf("remote command:\n");
-	if (strcmp(ip, "::")){
+	if (strcmp(ip, "::")) {
 		printf("ssh-copy-id -p %d %s\n", port, ip);
 	} else {
 		printf("ssh-copy-id -p %d <this machines ip>\n", port);
@@ -105,7 +106,7 @@ void print_fingerprint(const char * filename){
 	char *pubpath;
 	char *sha256fp=NULL;
 	pubpath = getpath(filename);
-	if (NULL == (sha256fp = fingerprint(pubpath))){
+	if (NULL == (sha256fp = fingerprint(pubpath))) {
 		printf("Warning: Could not determine the local pubkeys fingerprint.\n");
 		free(pubpath);
 		return;
@@ -151,15 +152,15 @@ int process_client() {
 
 	/* proceed to authentication */
 	auth = authenticate(&con);
-	if(!auth){
+	if(!auth) {
 		ssh_disconnect(con.session);
 		return 1;
 	}
 	do {
 		message = ssh_message_get(con.session);
-		if(message){
+		if(message) {
 			if(ssh_message_type(message) == SSH_REQUEST_CHANNEL_OPEN
-			&& ssh_message_subtype(message) == SSH_CHANNEL_SESSION) {
+			   && ssh_message_subtype(message) == SSH_CHANNEL_SESSION) {
 				chan = ssh_message_channel_request_open_reply_accept(message);
 				ssh_message_free(message);
 				break;
@@ -174,7 +175,7 @@ int process_client() {
 
 	if(!chan) {
 		printf("Error: Client did not ask for a channel session (%s)\n",
-		ssh_get_error(con.session));
+		       ssh_get_error(con.session));
 		ssh_finalize();
 		return 1;
 	}
@@ -183,7 +184,7 @@ int process_client() {
 		message = ssh_message_get(con.session);
 		if(message != NULL) {
 			if(ssh_message_type(message) == SSH_REQUEST_CHANNEL) {
-				if (ssh_message_subtype(message) == SSH_CHANNEL_REQUEST_EXEC){
+				if (ssh_message_subtype(message) == SSH_CHANNEL_REQUEST_EXEC) {
 					exec = 1;
 					ssh_message_channel_request_reply_success(message);
 					ssh_message_free(message);
@@ -199,12 +200,14 @@ int process_client() {
 
 
 	if (exec) {
-		if ((i = ReadExec(chan, buffer, 1024)) > 0){
+		if ((i = ReadExec(chan, buffer, 1024)) > 0) {
 			char buf[i];
 			snprintf(buf, sizeof buf, "%s", buffer);
 
 			show_content(&con, buf);
-			ssh_channel_write(chan,"INFO: Received keys, thanks for using heimdallr!\r\n",50);
+			ssh_channel_write(chan,
+			                  "INFO: Received keys, thanks for using heimdallr!\r\n",
+			                  50);
 			ssh_channel_close(chan);
 			ssh_disconnect(session);
 			ssh_finalize();
@@ -221,52 +224,52 @@ int authenticate(struct connection *c) {
 		message = ssh_message_get(session);
 		if(!message)
 			break;
-		switch(ssh_message_type(message)){
-			case SSH_REQUEST_AUTH:
-				switch(ssh_message_subtype(message)){
-					case SSH_AUTH_METHOD_INTERACTIVE:
-						ssh_message_auth_reply_success(message,0);
-						ssh_message_free(message);
-						return 1;
-					case SSH_AUTH_METHOD_NONE:
-					default:
-						ssh_message_auth_set_methods(message,
-							SSH_AUTH_METHOD_INTERACTIVE);
-						ssh_message_reply_default(message);
-						break;
-				}
-				break;
-				default:
+		switch(ssh_message_type(message)) {
+		case SSH_REQUEST_AUTH:
+			switch(ssh_message_subtype(message)) {
+			case SSH_AUTH_METHOD_INTERACTIVE:
+				ssh_message_auth_reply_success(message,0);
+				ssh_message_free(message);
+				return 1;
+			case SSH_AUTH_METHOD_NONE:
+			default:
 				ssh_message_auth_set_methods(message,
-					SSH_AUTH_METHOD_INTERACTIVE);
+				                             SSH_AUTH_METHOD_INTERACTIVE);
 				ssh_message_reply_default(message);
+				break;
+			}
+			break;
+		default:
+			ssh_message_auth_set_methods(message,
+			                             SSH_AUTH_METHOD_INTERACTIVE);
+			ssh_message_reply_default(message);
 		}
 		ssh_message_free(message);
 	} while (ssh_get_status(session) != SSH_CLOSED ||
-		ssh_get_status(session) != SSH_CLOSED_ERROR);
+	         ssh_get_status(session) != SSH_CLOSED_ERROR);
 	return 0;
 }
 
 int ReadExec(ssh_channel chan, void *vptr, int maxlen) {
 	int n=0, rc=0, ctr=0;
-	char    c, *buffer;
+	char c, *buffer;
 	buffer = vptr;
 
 	for ( n = 1; n < maxlen; n++ ) {
 		if ( (rc = ssh_channel_read(chan, &c, 1, 0)) == 1 ) {
-			if(ctr > 0){
+			if(ctr > 0) {
 				ctr = ctr +1;
 			}
-			if(ctr > 3){
+			if(ctr > 3) {
 				ctr = 0;
 			}
-			if ( c == '\r' || c == '\n' ){
+			if ( c == '\r' || c == '\n' ) {
 				break;
 			}
-			if(c != '\r' || c != '\n' || c != '\0'){
+			if(c != '\r' || c != '\n' || c != '\0') {
 				*buffer++ = c;
 			}
-			if ( c == '\r' ){
+			if ( c == '\r' ) {
 				break;
 			}
 		} else if ( rc == 0 ) {
@@ -285,8 +288,8 @@ int ReadExec(ssh_channel chan, void *vptr, int maxlen) {
 }
 
 int show_content(struct connection *c, char* command) {
-    printf("%s\n", command);
-    return 0;
+	printf("%s\n", command);
+	return 0;
 }
 
 /*
@@ -320,12 +323,12 @@ char* fingerprint(const char * path){
 		exit(EXIT_FAILURE);
 	}
 	while((ch = fgetc(fp)) != '\n') {
-		if (last_ch!=' ' && ch == ' '){
+		if (last_ch!=' ' && ch == ' ') {
 			word++;
 		} else if (last_ch == ' ' && ch == ' ') {
 			continue;
 		}
-		if (' ' != ch && 1 == word && c<maxlen){
+		if (' ' != ch && 1 == word && c<maxlen) {
 			buf[c]=ch;
 			c++;
 		}
@@ -340,7 +343,7 @@ char* fingerprint(const char * path){
 	// remove padding
 	output_pad = base64Encode(d, 32);
 	k=strlen(output_pad);
-	for (; output_pad[k-1]=='=';k--);
+	for (; output_pad[k-1]=='='; k--);
 	output_unpad = malloc(k+1);
 	strncpy(output_unpad, output_pad, k);
 	output_unpad[k] = '\0';
@@ -363,7 +366,7 @@ char* fingerprint(const char * path){
 
 size_t calcDecodeLength(const char* b64input) {
 	size_t len = strlen(b64input),
-		padding = 0;
+	       padding = 0;
 
 	if (b64input[len-1] == '=' && b64input[len-2] == '=')
 		padding = 2;
