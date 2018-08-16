@@ -84,7 +84,7 @@ char* getpath(const char* filename){
 int ensure_config_dir(){
 	char *dir_path = getpath("");
 	int ret = mkdir(dir_path, S_IRWXU);
-	if (-1 == ret && errno == 17){
+	if (-1 == ret && errno == 17) {
 		ret = 1;
 		errno = 0;
 	}
@@ -116,13 +116,13 @@ int generate_key()
 
 	bne = BN_new();
 	ret = BN_set_word(bne,e);
-	if(ret != 1){
+	if(ret != 1) {
 		goto free_all;
 	}
 
 	r = RSA_new();
 	ret = RSA_generate_key_ex(r, bits, bne, NULL);
-	if(ret != 1){
+	if(ret != 1) {
 		goto free_all;
 	}
 
@@ -134,7 +134,7 @@ int generate_key()
 
 	free(key_path);
 
-	free_all:
+free_all:
 
 	BIO_free_all(bp_public);
 	BIO_free_all(bp_private);
@@ -164,14 +164,14 @@ int generate_pubkey_from_private(char * private){
 	ssh_key pubkey;
 
 	pub_path = getpath("public.pem");
-	if (access(pub_path, F_OK) != -1){
+	if (access(pub_path, F_OK) != -1) {
 		// pubkey already exists, do nothing
 		free(pub_path);
 		return 0;
 	}
 
 	key_path = getpath("private.pem");
-	if (ssh_pki_import_privkey_file(key_path, NULL, NULL, NULL, &privkey) != SSH_OK){
+	if (ssh_pki_import_privkey_file(key_path, NULL, NULL, NULL, &privkey) != SSH_OK) {
 		free(pub_path);
 		free(key_path);
 		ssh_key_free(privkey);
@@ -180,7 +180,7 @@ int generate_pubkey_from_private(char * private){
 	}
 	free(key_path);
 
-	if (SSH_OK != ssh_pki_export_privkey_to_pubkey(privkey, &pubkey)){
+	if (SSH_OK != ssh_pki_export_privkey_to_pubkey(privkey, &pubkey)) {
 		printf("Error: Could not generate public- from private-key file.\n");
 		free(pub_path);
 		ssh_key_free(privkey);
@@ -189,7 +189,7 @@ int generate_pubkey_from_private(char * private){
 	}
 	ssh_key_free(privkey);
 
-	if (SSH_OK != ssh_pki_export_pubkey_file(pubkey, pub_path)){
+	if (SSH_OK != ssh_pki_export_pubkey_file(pubkey, pub_path)) {
 		printf("Error: Could not export the public key to file.\n");
 		free(pub_path);
 		ssh_key_free(pubkey);
@@ -218,13 +218,13 @@ int ssh_pki_export_pubkey_file(const ssh_key pubkey, const char * filename){
 	char * b64;
 	char * keytype;
 
-	if(SSH_KEYTYPE_UNKNOWN == (type = ssh_key_type(pubkey))){
+	if(SSH_KEYTYPE_UNKNOWN == (type = ssh_key_type(pubkey))) {
 		printf("Error: Could not determine the public keys type.\n");
 		return SSH_ERROR;
 	}
 	keytype = strdup(ssh_key_type_to_char(type));
 
-	if (SSH_OK != ssh_pki_export_pubkey_base64(pubkey, &b64)){
+	if (SSH_OK != ssh_pki_export_pubkey_base64(pubkey, &b64)) {
 		printf("Error: Could not export public key.\n");
 		ssh_string_free_char(keytype);
 		return SSH_ERROR;
@@ -286,10 +286,10 @@ int ensure_private_key_permission(){
 
 void print_permission_warning(char * file, int permission) {
 	printf(
-	"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
-	"@         WARNING: UNPROTECTED PRIVATE KEY FILE!          @\n"
-	"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
-	"Permissions %o for '%s' are too open.\n"
-	"It is required that your private key files are NOT accessible by others.\n"
-	"This private key will be ignored.\n", permission, file);
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
+		"@         WARNING: UNPROTECTED PRIVATE KEY FILE!          @\n"
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
+		"Permissions %o for '%s' are too open.\n"
+		"It is required that your private key files are NOT accessible by others.\n"
+		"This private key will be ignored.\n", permission, file);
 }
