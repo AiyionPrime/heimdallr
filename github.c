@@ -167,7 +167,7 @@ int find_user(char *name)
 	struct json_object *jobj = NULL, *userjobj, *usernamejobj;
 	struct json_object *returnObj, *amountObj;
 
-	int arraylen, target, resultamount;
+	int arraylen, jtype, target, resultamount;
 
 	escaped_name = curl_escape(name, 0);
 	url = malloc(strlen(baseurl)+strlen(escaped_name)+1);
@@ -181,6 +181,12 @@ int find_user(char *name)
 	curl_free(escaped_name);
 
 	jobj = fetch_jobj(url);
+	free(url);
+	jtype = json_object_get_type(jobj);
+	if (json_type_object != jtype) {
+		json_object_put(jobj);
+		return EXIT_FAILURE;
+	}
 	returnObj = json_object_object_get(jobj, "items");
 	amountObj = json_object_object_get(jobj, "total_count");
 
@@ -202,7 +208,6 @@ int find_user(char *name)
 		printf("Info: could not find a user with a name similar to '%s'.\n", name);
 	}
 	json_object_put(jobj);
-	free(url);
 	return EXIT_SUCCESS;
 }
 
