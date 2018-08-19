@@ -137,7 +137,7 @@ int get_keys(const char *username)
 		arraylen = json_object_array_length(jobj);
 		for (int i=0; i<arraylen; i++) {
 			tuplejobj = json_object_array_get_idx(jobj, i);
-			keyjobj = json_object_object_get(tuplejobj, "key");
+			json_object_object_get_ex(tuplejobj, "key", &keyjobj);
 			printf("%s %s@github\n", json_object_get_string(keyjobj), username);
 		}
 	}else{
@@ -164,7 +164,7 @@ int find_user(char *name)
 	char *baseurl = "https://api.github.com/search/users?q=";
 	char *url;
 	char *escaped_name;
-	struct json_object *jobj = NULL, *userjobj, *usernamejobj;
+	struct json_object *jobj = NULL, *userjobj, *usernamejobj, *keyjobj;
 	struct json_object *returnObj, *amountObj;
 
 	int arraylen, jtype, target, resultamount;
@@ -187,23 +187,24 @@ int find_user(char *name)
 		json_object_put(jobj);
 		return EXIT_FAILURE;
 	}
-	returnObj = json_object_object_get(jobj, "items");
-	amountObj = json_object_object_get(jobj, "total_count");
+	json_object_object_get_ex(jobj, "items", &returnObj);
+	json_object_object_get_ex(jobj, "total_count", &amountObj);
 
 	arraylen = json_object_array_length(returnObj);
 	resultamount = json_object_get_int(amountObj);
 
 	for (int i=0; i<arraylen; i++) {
 		userjobj = json_object_array_get_idx(returnObj, i);
-		usernamejobj = json_object_object_get(userjobj, "login");
+		json_object_object_get_ex(userjobj, "login", &usernamejobj);
 		printf("%i: %s\n", i, json_object_get_string(usernamejobj));
 	}
 	if (arraylen>0) {
 		capped_amount_warning(arraylen, resultamount);
 		target = ensure_input(arraylen);
-		get_keys(json_object_get_string(json_object_object_get(json_object_array_get_idx(
-									       returnObj, target),
-		                                                       "login")));
+		json_object_object_get_ex(json_object_array_get_idx(
+						  returnObj, target),
+		                          "login", &keyjobj);
+		get_keys(json_object_get_string(keyjobj));
 	} else {
 		printf("Info: could not find a user with a name similar to '%s'.\n", name);
 	}
