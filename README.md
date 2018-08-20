@@ -75,14 +75,19 @@ sudo make install
 #### Using the arch user repository
 
 ```
-yaourt -S heimdallr-git
+yaourt -S heimdallr
 ```
 
 If you like this tool, don't forget to vote for it, so others can find it, too!
 
-https://aur.archlinux.org/pkgbase/heimdallr-git/ (the button is hidden on the right under 'package actions')
+https://aur.archlinux.org/pkgbase/heimdallr/ (the button is hidden on the right under 'package actions')
 Thanks!
 
+##### Alternatively: Install the latest development release
+
+```
+yaourt -S heimdallr-git
+```
 
 ## Contributing
 
