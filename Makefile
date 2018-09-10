@@ -25,6 +25,7 @@ clean:
 	rm -f $(OBJ) $(OUT) $(MAN).gz
 	rm -f test/*.c
 	rm -f test/test
+	rm -f all_tests.c
 
 .PHONY: install-bin
 install-bin: build
