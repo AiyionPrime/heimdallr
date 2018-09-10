@@ -103,19 +103,31 @@ void print_remote_help(int port, char * ip){
  */
 
 void print_fingerprint(const char * filename){
+	unsigned char *hash = NULL;
+	ssh_key srv_pubkey = NULL;
+	int rc = 0;
 	char *pubpath;
-	char *sha256fp=NULL;
+	size_t hlen;
+
 	pubpath = getpath(filename);
-	if (NULL == (sha256fp = fingerprint(pubpath))) {
-		printf("Warning: Could not determine the local pubkeys fingerprint.\n");
-		free(pubpath);
+
+	ssh_pki_import_pubkey_file(pubpath, &srv_pubkey);
+	free(pubpath);
+	if (rc < 0) {
 		return;
 	}
-	free(pubpath);
 
-	printf("SHA256:%s\n", sha256fp);
+	rc = ssh_get_publickey_hash(srv_pubkey,
+				    SSH_PUBLICKEY_HASH_SHA256,
+				    &hash,
+				    &hlen);
+	ssh_key_free(srv_pubkey);
+	if (rc < 0) {
+		return;
+	}
 
-	free(sha256fp);
+	ssh_print_hash(SSH_PUBLICKEY_HASH_SHA256, hash, hlen);
+	free(hash);
 }
 
 /*
@@ -292,152 +304,3 @@ int show_content(struct connection *c, char* command) {
 	return 0;
 }
 
-/*
- * Function: fingerprint
- *
- * calculates the sha256 fingerprint of a given public key file in OpenSSH format
- *
- * path: the path of a file holding a public key file in OpenSSH format
- *
- * returns: the string holding the fingerprint . Needs to be freed by the caller.
- */
-
-char* fingerprint(const char * path){
-	char *fingerprint64;
-	unsigned char *fingerprint;
-	char last_ch=EOF, ch;
-	FILE *fp;
-	int maxlen = 16384+1;
-	int word=0;
-	int c=0;
-	char buf[16384+1]="";
-	size_t test, k;
-	unsigned char *d;
-	char *output_pad, *output_unpad;
-
-	// read pubkey base64 string into fingerprint64
-	fp = fopen(path, "r");
-	if (fp == NULL)
-	{
-		perror("Error while opening the file.\n");
-		exit(EXIT_FAILURE);
-	}
-	while((ch = fgetc(fp)) != '\n') {
-		if (last_ch!=' ' && ch == ' ') {
-			word++;
-		} else if (last_ch == ' ' && ch == ' ') {
-			continue;
-		}
-		if (' ' != ch && 1 == word && c<maxlen) {
-			buf[c]=ch;
-			c++;
-		}
-		last_ch = ch;
-	}
-	fclose(fp);
-	fingerprint64 = strdup(buf);
-
-	base64Decode(buf, &fingerprint, &test);
-	d = SHA256(fingerprint, calcDecodeLength(fingerprint64), 0);
-
-	// remove padding
-	output_pad = base64Encode(d, 32);
-	k=strlen(output_pad);
-	for (; output_pad[k-1]=='='; k--);
-	output_unpad = malloc(k+1);
-	strncpy(output_unpad, output_pad, k);
-	output_unpad[k] = '\0';
-
-	free(fingerprint);
-	free(fingerprint64);
-	free(output_pad);
-
-	return output_unpad;
-}
-
-/*
- * Function: calcDecodeLength
- * author:  john<at>nachtimwald<dot>com
- *
- * b64input: calculates the length of a decoded base64 string
- *
- * returns: the length of the decoded data
- */
-
-size_t calcDecodeLength(const char* b64input) {
-	size_t len = strlen(b64input),
-	       padding = 0;
-
-	if (b64input[len-1] == '=' && b64input[len-2] == '=')
-		padding = 2;
-	else if (b64input[len-1] == '=')
-		padding = 1;
-
-	return (len*3)/4 - padding;
-}
-
-/*
- * Function: base64Decode
- * author:  john<at>nachtimwald<dot>com
- *
- * decodes base64 strings into byte data
- *
- * b64message: the base64 string
- *
- * buffer: where to store the decoded data
- *
- * length: how long the decoded data will be (use calcDecodeLength())
- */
-
-int base64Decode(char* b64message, unsigned char** buffer, size_t* length) {
-	BIO *bio, *b64;
-
-	int decodeLen = calcDecodeLength(b64message);
-	*buffer = (unsigned char*)malloc(decodeLen + 1);
-	(*buffer)[decodeLen] = '\0';
-
-	bio = BIO_new_mem_buf(b64message, -1);
-	b64 = BIO_new(BIO_f_base64());
-	bio = BIO_push(b64, bio);
-
-	BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
-	*length = BIO_read(bio, *buffer, strlen(b64message));
-	assert(*length == decodeLen);
-	BIO_free_all(bio);
-
-	return (0);
-}
-
-/*
- * Function: base64Encode
- * author:  john<at>nachtimwald<dot>com
- *
- * encodes given byte data into a base64 encoded string
- *
- * input: the unencoded byte data
- *
- * length: the length of the byte data, as it lacks a null terminator
- *
- * returns: the pointer to the base64 string. The caller needs to free it after using it.
- */
-
-char *base64Encode(const unsigned char *input, int length)
-{
-	BIO *bmem, *b64;
-	BUF_MEM *bptr;
-
-	b64 = BIO_new(BIO_f_base64());
-	bmem = BIO_new(BIO_s_mem());
-	b64 = BIO_push(b64, bmem);
-	BIO_write(b64, input, length);
-	BIO_flush(b64);
-	BIO_get_mem_ptr(b64, &bptr);
-
-	char *buff = (char *)malloc(bptr->length);
-	memcpy(buff, bptr->data, bptr->length-1);
-	buff[bptr->length-1] = 0;
-
-	BIO_free_all(b64);
-
-	return buff;
-}
