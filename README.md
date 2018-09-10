@@ -94,6 +94,18 @@ yaourt -S heimdallr-git
 We're open for ideas improving the workflow of sharing ssh public keys,
 so if you've got a good one, feel free to contact me about it.
 
+## Testing
+
+In order to run the small amount of available unittests, run
+
+```
+make test
+```
+
+in the source directory.
+
+The expected output is something like: `100%: Checks: n, Failures: 0, Errors: 0`.
+
 ## Author
 
 aiyion (on #hackint)

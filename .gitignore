@@ -2,3 +2,7 @@
 heimdallr
 
 compiler_flags
+
+test/*.c
+test/test
+all_tests.c
