@@ -24,7 +24,7 @@ build: $(SOURCES) compiler_flags
 clean:
 	rm -f $(OBJ) $(OUT) $(MAN).gz
 	rm -f test/*.c
-	rm -f test/test
+	rm -f test/check
 	rm -f all_tests.c
 
 .PHONY: install-bin
@@ -52,12 +52,12 @@ uninstall:
 compiler_flags: force
 	echo '$(CFLAGS)' | cmp -s - $@ || echo '$(CFLAGS)' > $@
 
-prepare-test:
+prepare-check:
 	checkmk test/config-test.check > all_tests.c
 
-compile-test: prepare-test
-	$(CC) -o test/test $(INCLUDE) $(CFLAGS) $(LDFLAGS) config.c all_tests.c $(LDLIBS) $(TESTLIBS)
+compile-check: prepare-check
+	$(CC) -o test/check $(INCLUDE) $(CFLAGS) $(LDFLAGS) config.c all_tests.c $(LDLIBS) $(TESTLIBS)
 
-.PHONY: test
-test: compile-test
-	./test/test
+.PHONY: check
+check: compile-check
+	./test/check

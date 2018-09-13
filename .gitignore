@@ -4,5 +4,5 @@ heimdallr
 compiler_flags
 
 test/*.c
-test/test
+test/check
 all_tests.c
