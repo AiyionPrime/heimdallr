@@ -15,9 +15,9 @@ These instructions will get you a copy of the project running on your local mach
 
 
 * `gcc` or another compiler
+* [libssh](https://www.libssh.org/) to run the ssh-server
 * [json-c](https://github.com/json-c/json-c) in order to interprete api responses
 * [openssl](https://github.com/openssl/openssl) for generating ssh keys
-* [libssh](https://www.libssh.org/) to run the ssh-server
 
 
 ### Installing
