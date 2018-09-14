@@ -63,7 +63,7 @@ int main(int argc, char *argv[]){
 	int conf_available = ensure_config_dir();
 	if (!conf_available) {
 		printf(
-			"Info: Could not find config directory, crating one under '~/.config/heimdallr'.\n");
+			"Info: Could not find config directory, creating one under '~/.config/heimdallr'.\n");
 		conf_available = ensure_config_dir();
 		if (!conf_available) {
 			printf(
