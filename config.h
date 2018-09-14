@@ -14,6 +14,8 @@ char* getpath(const char* filename);
 
 int ensure_config_dir();
 
+int ensure_directory(char *directory);
+
 int generate_key();
 
 int generate_pubkey_from_private(char * private);
