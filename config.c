@@ -74,6 +74,23 @@ char* getpath(const char* filename){
 }
 
 /*
+ * Function: ensure_directory
+ *
+ * creates the given directory strucure, if it does not exist
+ *
+ * returns: 0 if it succeeded, a larger number if not
+ */
+
+int ensure_directory(char *directory){
+	int ret = mkdir(directory, S_IRWXU);
+	if (-1 == ret && errno == 17) {
+		ret = 1;
+		errno = 0;
+	}
+	return ret;
+}
+
+/*
  * Function: ensure_config_dir
  *
  * creates the directory structure '<homedir>/.config/heimdallr/', if it does not exist
@@ -82,12 +99,23 @@ char* getpath(const char* filename){
  */
 
 int ensure_config_dir(){
+	char *config_path;
 	char *dir_path = getpath("");
-	int ret = mkdir(dir_path, S_IRWXU);
-	if (-1 == ret && errno == 17) {
-		ret = 1;
-		errno = 0;
+	char *relative_path = "/.config/";
+	const char *home = homedir();
+	int len = strlen(home) + strlen(relative_path) + 1;
+	int ret = 0;
+
+	config_path = (char *)calloc(sizeof(char), len);
+	strcat(config_path, home);
+	strcat(config_path, relative_path);
+
+	ret = ensure_directory(config_path);
+	if (0 == ret){
+		ret = ensure_directory(dir_path);
 	}
+
+	free(config_path);
 	free(dir_path);
 	return ret;
 }
