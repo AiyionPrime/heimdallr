@@ -40,6 +40,20 @@ void help(void)
 }
 
 /*
+ * Function: version
+ *
+ * show the current hardcoded version, as well as the current git version, if available
+ */
+
+void version(void)
+{
+	printf("version: %s\n", VERSION);
+	if (GIT_VERSION[0] != '\0') {
+		printf("git-version: %s\n", GIT_VERSION);
+	}
+}
+
+/*
  * Function: main
  *
  * creates a config directory and generates a ssh privatekey into it
@@ -132,7 +146,7 @@ int main(int argc, char *argv[]){
 		help();
 		break;
 	case 'V':
-		printf("Version: %s\n", VERSION);
+		version();
 		break;
 	default:
 		synopsys("heimdallr");
