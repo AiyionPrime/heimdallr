@@ -1,7 +1,7 @@
 PREFIX = /usr
 
 CC = gcc
-CFLAGS = -Wall -Werror -DVERSION=\"$(GIT_VERSION)\"
+CFLAGS = -Wall -Werror -DGIT_VERSION=\"$(GIT_VERSION)\" -DVERSION=\"$(VERSION)\"
 
 LDLIBS = -lcurl -ljson-c -lcrypto -lssh
 #LDFLAGS = -Lusr/local/lib 
@@ -12,6 +12,7 @@ SOURCES = heimdallr.c config.c sshserver.c github.c
 OUT = heimdallr
 OBJ = $(src:.c=.o)
 
+VERSION := "v1.0"
 GIT_VERSION := $(shell git describe --dirty --always --tags)
 
 all: build
