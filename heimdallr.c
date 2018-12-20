@@ -74,12 +74,12 @@ void version(void)
 
 int main(int argc, char *argv[]){
 	int port = -1;
-	int conf_available = ensure_config_dir();
-	if (!conf_available) {
+	int conf_unavailable = ensure_config_dir();
+	if (conf_unavailable) {
 		printf(
 			"Info: Could not find config directory, creating one under '~/.config/heimdallr'.\n");
-		conf_available = ensure_config_dir();
-		if (!conf_available) {
+		conf_unavailable = ensure_config_dir();
+		if (conf_unavailable) {
 			printf(
 				"Error: Could not create config directory under '~/.config/heimdallr'.\n");
 			return EXIT_FAILURE;
