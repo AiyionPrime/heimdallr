@@ -30,7 +30,7 @@ A step by step series of examples that tells you, how to get a development env r
 clone this repo
 
 ```
-git clone git@github.com:aiyionprime/heimdallr.git
+git clone https://github.com/AiyionPrime/heimdallr.git
 ```
 
 cd into the project and build it
