@@ -25,6 +25,7 @@ build: $(SOURCES) compiler_flags
 .PHONY: clean
 clean:
 	rm -f $(OBJ) $(OUT) $(MAN).gz
+	rm -f test/check
 
 .PHONY: install-bin
 install-bin: build
