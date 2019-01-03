@@ -3,9 +3,12 @@ PREFIX = /usr
 CC = gcc
 CFLAGS = -Wall -Werror -DGIT_VERSION=\"$(GIT_VERSION)\" -DVERSION=\"$(VERSION)\"
 
+MOCKS = getline printf
 LDLIBS = -lcurl -ljson-c -lcrypto -lssh
 #LDFLAGS = -Lusr/local/lib 
 #INCLUDE = -Iusr/local/include
+TESTLIBS = -lcmocka
+TESTFLAGS = $(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
 
 MAN = heimdallr.1
 SOURCES = heimdallr.c config.c sshserver.c github.c
@@ -33,7 +36,6 @@ install-bin: build
 doc:
 	gzip -c man/$(MAN) > heimdallr.1.gz
 
-
 .PHONY: install-doc
 install-doc: doc
 	cp $(MAN).gz $(DESTDIR)$(PREFIX)/share/man/man1/
@@ -49,3 +51,10 @@ uninstall:
 .PHONY: force
 compiler_flags: force
 	echo '$(CFLAGS)' | cmp -s - $@ || echo '$(CFLAGS)' > $@
+
+compile-check:
+	$(CC) -o test/check $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test.c github.c config.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS)
+
+.PHONY: check
+check: compile-check
+	./test/check

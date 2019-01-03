@@ -22,6 +22,10 @@ See [deployment](#deployment) for notes on how to install the project on your sy
 * [json-c](https://github.com/json-c/json-c) in order to interprete api responses
 * [openssl](https://github.com/openssl/openssl) for generating ssh keys
 
+#### Optional
+
+* [cmocka](https://cmocka.org/) for make check
+
 
 ### Compiling
 
@@ -102,6 +106,21 @@ yaourt -S heimdallr-git
 
 We're open for ideas improving the workflow of sharing ssh public keys,
 so if you've got a good one, feel free to contact me about it.
+
+## Testing
+
+In order to run the small amount of available unittests, run
+
+```
+make check
+```
+
+in the source directory.
+
+The expected output is something like:
+[==========] Running n test(s).
+...
+[  PASSED  ] n test(s).
 
 ## Author
 
