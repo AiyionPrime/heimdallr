@@ -3,10 +3,12 @@ PREFIX = /usr
 CC = gcc
 CFLAGS = -Wall -Werror -DVERSION=\"$(GIT_VERSION)\"
 
+MOCKS = getline printf
 LDLIBS = -lcurl -ljson-c -lcrypto -lssh
 #LDFLAGS = -Lusr/local/lib 
 #INCLUDE = -Iusr/local/include
 TESTLIBS = -lcmocka
+TESTFLAGS = $(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
 
 MAN = heimdallr.1
 SOURCES = heimdallr.c config.c sshserver.c github.c
