@@ -2,4 +2,5 @@
 heimdallr
 
 compiler_flags
+test/check
 
