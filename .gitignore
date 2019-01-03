@@ -3,6 +3,3 @@ heimdallr
 
 compiler_flags
 
-test/*.c
-test/check
-all_tests.c

@@ -1,8 +1,0 @@
-#include "config.h"
-
-#test t_valid_port
-	fail_unless(-1 == valid_port("-1"), "valid_port failed 1");
-	fail_unless(-1 == valid_port("65536"), "valid_port failed 2");
-	fail_unless(65535 == valid_port("65535"), "valid_port failed 3");
-	fail_unless(-1 == valid_port("0"), "valid_port failed 4");
-	fail_unless(1 == valid_port("1"), "valid_port failed 4");

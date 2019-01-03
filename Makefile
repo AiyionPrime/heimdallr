@@ -6,7 +6,7 @@ CFLAGS = -Wall -Werror -DVERSION=\"$(GIT_VERSION)\"
 LDLIBS = -lcurl -ljson-c -lcrypto -lssh
 #LDFLAGS = -Lusr/local/lib 
 #INCLUDE = -Iusr/local/include
-TESTLIBS = -lcheck
+TESTLIBS = -lcmocka
 
 MAN = heimdallr.1
 SOURCES = heimdallr.c config.c sshserver.c github.c
@@ -23,9 +23,6 @@ build: $(SOURCES) compiler_flags
 .PHONY: clean
 clean:
 	rm -f $(OBJ) $(OUT) $(MAN).gz
-	rm -f test/*.c
-	rm -f test/check
-	rm -f all_tests.c
 
 .PHONY: install-bin
 install-bin: build
@@ -52,11 +49,8 @@ uninstall:
 compiler_flags: force
 	echo '$(CFLAGS)' | cmp -s - $@ || echo '$(CFLAGS)' > $@
 
-prepare-check:
-	checkmk test/config-test.check > all_tests.c
-
-compile-check: prepare-check
-	$(CC) -o test/check $(INCLUDE) $(CFLAGS) $(LDFLAGS) config.c all_tests.c $(LDLIBS) $(TESTLIBS)
+compile-check:
+	$(CC) -o test/check $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test.c github.c config.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS)
 
 .PHONY: check
 check: compile-check
