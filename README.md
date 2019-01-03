@@ -20,6 +20,10 @@ These instructions will get you a copy of the project running on your local mach
 * [json-c](https://github.com/json-c/json-c) in order to interprete api responses
 * [openssl](https://github.com/openssl/openssl) for generating ssh keys
 
+#### Optional
+
+* [cmocka](https://cmocka.org/) for make check
+
 
 ### Installing
 
@@ -100,12 +104,15 @@ so if you've got a good one, feel free to contact me about it.
 In order to run the small amount of available unittests, run
 
 ```
-make test
+make check
 ```
 
 in the source directory.
 
-The expected output is something like: `100%: Checks: n, Failures: 0, Errors: 0`.
+The expected output is something like:
+[==========] Running n test(s).
+...
+[  PASSED  ] n test(s).
 
 ## Author
 
