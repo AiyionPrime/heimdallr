@@ -33,6 +33,7 @@ int ensure_input(int options)
 		}
 		status = sscanf(line, "%d", &input);
 		free(line);
+		line = NULL;
 		while (status != 1) {
 			printf("Invalid Input.\nSpecify a target in range [0..%i]:\n", options-1);
 			res = getline(&line, &n, stdin);
@@ -41,6 +42,7 @@ int ensure_input(int options)
 			}
 			status = sscanf(line, "%d", &input);
 			free(line);
+			line = NULL;
 		}
 	}
 	return input;
