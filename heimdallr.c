@@ -40,6 +40,20 @@ void help(void)
 }
 
 /*
+ * Function: version
+ *
+ * show the current hardcoded version, as well as the current git version, if available
+ */
+
+void version(void)
+{
+	printf("version: %s\n", VERSION);
+	if (GIT_VERSION[0] != '\0') {
+		printf("git-version: %s\n", GIT_VERSION);
+	}
+}
+
+/*
  * Function: main
  *
  * creates a config directory and generates a ssh privatekey into it
@@ -60,12 +74,12 @@ void help(void)
 
 int main(int argc, char *argv[]){
 	int port = -1;
-	int conf_available = ensure_config_dir();
-	if (!conf_available) {
+	int conf_unavailable = ensure_config_dir();
+	if (conf_unavailable) {
 		printf(
 			"Info: Could not find config directory, creating one under '~/.config/heimdallr'.\n");
-		conf_available = ensure_config_dir();
-		if (!conf_available) {
+		conf_unavailable = ensure_config_dir();
+		if (conf_unavailable) {
 			printf(
 				"Error: Could not create config directory under '~/.config/heimdallr'.\n");
 			return EXIT_FAILURE;
@@ -132,7 +146,7 @@ int main(int argc, char *argv[]){
 		help();
 		break;
 	case 'V':
-		printf("Version: %s\n", VERSION);
+		version();
 		break;
 	default:
 		synopsys("heimdallr");

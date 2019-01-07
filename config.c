@@ -79,13 +79,13 @@ char* getpath(const char* filename){
  *
  * creates the given directory strucure, if it does not exist
  *
- * returns: 0 if it succeeded, a larger number if not
+ * returns: 0 if it succeeded, a -1 if not
  */
 
 int ensure_directory(char *directory){
 	int ret = mkdir(directory, S_IRWXU);
 	if (-1 == ret && errno == 17) {
-		ret = 1;
+		ret = 0;
 		errno = 0;
 	}
 	return ret;
@@ -96,7 +96,7 @@ int ensure_directory(char *directory){
  *
  * creates the directory structure '<homedir>/.config/heimdallr/', if it does not exist
  *
- * returns: 0 if it succeeded, a larger number if not
+ * returns: 0 if it succeeded, a -1 if not
  */
 
 int ensure_config_dir(){

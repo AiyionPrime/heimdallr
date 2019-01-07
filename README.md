@@ -9,7 +9,9 @@ This tool is intended to get developers public keys
 
 ## Getting Started
 
-These instructions will get you a copy of the project running on your local machine, for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project running on your local machine, for development and testing purposes.
+
+See [deployment](#deployment) for notes on how to install the project on your system.
 
 ### Prerequisites
 
@@ -25,14 +27,14 @@ These instructions will get you a copy of the project running on your local mach
 * [cmocka](https://cmocka.org/) for make check
 
 
-### Installing
+### Compiling
 
 A step by step series of examples that tells you, how to get a development env running.
 
 clone this repo
 
 ```
-git clone git@github.com:aiyionprime/heimdallr.git
+git clone https://github.com/AiyionPrime/heimdallr.git
 ```
 
 cd into the project and build it
@@ -75,6 +77,12 @@ Deploying this on a live system can be done by running the [build steps](#instal
 
 ```
 sudo make install
+```
+
+#### Using homebrew
+
+```
+brew install aiyionprime/tools/heimdallr
 ```
 
 #### Using the arch user repository
