@@ -3,6 +3,7 @@ PREFIX = /usr
 CC = gcc
 CFLAGS = -Wall -Werror -DVERSION=\"$(GIT_VERSION)\"
 
+MOCKS_SSHSERVER = fopen
 MOCKS_CONFIG = mkdir
 MOCKS_GITHUB = getline printf
 
@@ -14,6 +15,7 @@ TESTFLAGS =
 
 TESTFLAGS_CONFIG += $(foreach MOCK,$(MOCKS_CONFIG),-Wl,--wrap=$(MOCK))
 TESTFLAGS_GITHUB += $(foreach MOCK,$(MOCKS_GITHUB),-Wl,--wrap=$(MOCK))
+TESTFLAGS_SSHSERVER += $(foreach MOCK,$(MOCKS_SSHSERVER),-Wl,--wrap=$(MOCK))
 
 MAN = heimdallr.1
 SOURCES = heimdallr.c config.c sshserver.c github.c
@@ -32,6 +34,7 @@ clean:
 	rm -f $(OBJ) $(OUT) $(MAN).gz
 	rm -f test/test_config
 	rm -f test/test_github
+	rm -f test/test_sshserver
 
 .PHONY: install-bin
 install-bin: build
@@ -64,8 +67,12 @@ compile-check-config:
 compile-check-github:
 	$(CC) -o test/test_github $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test_github.c github.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS_GITHUB) $(TESTFLAGS)
 
+compile-check-sshserver:
+	$(CC) -o test/test_sshserver $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test_sshserver.c sshserver.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS_SSHSERVER) $(TESTFLAGS)
+
 
 .PHONY: check
 check: clean compile-check-config compile-check-github compile-check-sshserver
 	./test/test_config
 	./test/test_github
+	./test/test_sshserver
