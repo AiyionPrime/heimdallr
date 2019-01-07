@@ -76,6 +76,7 @@ void capped_amount_warning(int arraylength, int resultamount){
  * returns: the pointer to a json_object struct
  */
 
+__attribute__((weak))
 struct json_object* fetch_jobj(char *url)
 {
 	CURL *curl;

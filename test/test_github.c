@@ -1,5 +1,3 @@
-//#define TESTING 1
-
 #include <stdarg.h>
 #include <stddef.h>
 #include <setjmp.h>
@@ -8,22 +6,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../config.h"
 #include "../github.h"
 
-void test_valid_port (void ** state) {
-	assert_int_equal(-1, valid_port("-1"));
-	assert_int_equal(-1, valid_port("65536"));
-	assert_int_equal(65535, valid_port("65535"));
-	assert_int_equal(-1, valid_port("0"));
-	assert_int_equal(1, valid_port("1"));
-}
-
-
-int __real_printf(const char *format, ...);
-int __wrap_printf(const char *format, ...) {
-	return 0;
-}
 
 char * copystring(char* text){
 	char *input = (char*) malloc((strlen(text)+1)*sizeof(char));
@@ -51,6 +35,16 @@ int __wrap_getline(char **lineptr, size_t *n, FILE *stream) {
 			return 0;
 	}
 }
+
+int __real_printf(const char *format, ...);
+int __wrap_printf(const char *format, ...) {
+	return 0;
+}
+
+struct json_object* fetch_jobj(char *url) {
+	return mock_ptr_type(json_object*);
+}
+
 
 void test_ensure_input_first_try(void ** state) {
 	(void) state;
@@ -94,6 +88,40 @@ void test_ensure_input_thrice(void ** state) {
 }
 
 
+void test_get_keys(void **state) {
+	(void) state;
+	int ret;
+	struct json_object *fjobj;
+	char * fake_response = "[ { \"id\": 13371337,\
+				    \"key\": \"ssh-rsa c3NoLXJzYSBwdWI=\" }, \
+				  { \"id\": 13371338, \"key\": \"ssh-rsa c3NoLXJzYSBwdWIyCg==\" } ]";
+	fjobj = json_tokener_parse(fake_response);
+	will_return(fetch_jobj, fjobj);	
+	ret = get_keys("test_user");
+	assert_int_equal(ret, 0);
+}
+
+void test_find_user(void **state) {
+	(void) state;
+	int ret;
+	struct json_object *fjobj;
+	struct json_object *fjobjkey;
+	char * fake_response = "{ \"total_count\": 2,\
+				  \"incomplete_results\": false ,\
+				  \"items\": [ \
+					{ \"login\": \"test1\", \"id\": 13 },\
+					{ \"login\": \"test2\", \"id\": 37 } ] }";
+	char * fake_keyresponse = "[ { \"id\": 13371337, \"key\": \"ssh-rsa c3NoLXJzYSBwdWI=\" },\
+				     { \"id\": 13371338, \"key\": \"ssh-rsa c3NoLXJzYSBwdWIyCg==\" } ]";
+	fjobj = json_tokener_parse(fake_response);
+	fjobjkey = json_tokener_parse(fake_keyresponse);
+	will_return(fetch_jobj, fjobj);	
+	will_return(__wrap_getline, 0);
+	will_return(fetch_jobj, fjobjkey);	
+	ret = find_user("test");
+	assert_int_equal(ret, 0);
+}
+
 int setup (void ** state)
 {
 	return 0;
@@ -108,11 +136,12 @@ int main (void)
 {
 	const struct CMUnitTest tests [] =
 	{
-		cmocka_unit_test (test_valid_port),
 		cmocka_unit_test (test_ensure_input_first_try),
 		cmocka_unit_test (test_ensure_input_empty_input),
 		cmocka_unit_test (test_ensure_input_too_high_input),
 		cmocka_unit_test (test_ensure_input_thrice),
+		cmocka_unit_test (test_get_keys),
+		cmocka_unit_test (test_find_user),
 	};
 
 	int count_fail_tests =
