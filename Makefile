@@ -3,6 +3,7 @@ PREFIX = /usr
 CC = gcc
 CFLAGS = -Wall -Werror -DVERSION=\"$(GIT_VERSION)\"
 
+MOCKS_CONFIG = mkdir
 MOCKS_GITHUB = getline printf
 
 LDLIBS = -lcurl -ljson-c -lcrypto -lssh
@@ -11,6 +12,7 @@ LDLIBS = -lcurl -ljson-c -lcrypto -lssh
 TESTLIBS = -lcmocka
 TESTFLAGS =
 
+TESTFLAGS_CONFIG += $(foreach MOCK,$(MOCKS_CONFIG),-Wl,--wrap=$(MOCK))
 TESTFLAGS_GITHUB += $(foreach MOCK,$(MOCKS_GITHUB),-Wl,--wrap=$(MOCK))
 
 MAN = heimdallr.1
@@ -28,6 +30,7 @@ build: $(SOURCES) compiler_flags
 .PHONY: clean
 clean:
 	rm -f $(OBJ) $(OUT) $(MAN).gz
+	rm -f test/test_config
 	rm -f test/test_github
 
 .PHONY: install-bin
@@ -55,6 +58,8 @@ uninstall:
 compiler_flags: force
 	echo '$(CFLAGS)' | cmp -s - $@ || echo '$(CFLAGS)' > $@
 
+compile-check-config:
+	$(CC) -o test/test_config $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test_config.c config.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS_CONFIG) $(TESTFLAGS)
 
 compile-check-github:
 	$(CC) -o test/test_github $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test_github.c github.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS_GITHUB) $(TESTFLAGS)
@@ -62,4 +67,5 @@ compile-check-github:
 
 .PHONY: check
 check: clean compile-check-config compile-check-github compile-check-sshserver
+	./test/test_config
 	./test/test_github

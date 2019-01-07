@@ -41,6 +41,7 @@ int valid_port(char *p) {
  * returns: the home directories full path like '/home/foobar'
  */
 
+__attribute__((weak))
 const char* homedir(){
 	const char *homedir;
 	if ((homedir = getenv("HOME")) == NULL) {
