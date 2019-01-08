@@ -22,7 +22,7 @@ SOURCES = heimdallr.c config.c sshserver.c github.c
 OUT = heimdallr
 OBJ = $(src:.c=.o)
 
-VERSION := "v1.0.3"
+VERSION := "v1.1"
 GIT_VERSION := $(shell git describe --dirty --always --tags)
 
 all: build
