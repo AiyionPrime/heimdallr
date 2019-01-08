@@ -3,7 +3,7 @@ PREFIX = /usr
 CC = gcc
 CFLAGS = -Wall -Werror -DGIT_VERSION=\"$(GIT_VERSION)\" -DVERSION=\"$(VERSION)\"
 
-MOCKS_SSHSERVER = fopen
+MOCKS_SSHSERVER = fopen ssh_channel_read ssh_pki_import_pubkey_file ssh_print_hash
 MOCKS_CONFIG = mkdir
 MOCKS_GITHUB = getline printf
 
