@@ -263,26 +263,17 @@ int authenticate(struct connection *c) {
 }
 
 int ReadExec(ssh_channel chan, void *vptr, int maxlen) {
-	int n=0, rc=0, ctr=0;
+	int n=0, rc=0;
 	char c, *buffer;
 	buffer = vptr;
 
 	for ( n = 1; n < maxlen; n++ ) {
 		if ( (rc = ssh_channel_read(chan, &c, 1, 0)) == 1 ) {
-			if(ctr > 0) {
-				ctr = ctr +1;
-			}
-			if(ctr > 3) {
-				ctr = 0;
-			}
 			if ( c == '\r' || c == '\n' ) {
 				break;
 			}
 			if(c != '\r' || c != '\n' || c != '\0') {
 				*buffer++ = c;
-			}
-			if ( c == '\r' ) {
-				break;
 			}
 		} else if ( rc == 0 ) {
 			if ( n == 1 )
