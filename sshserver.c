@@ -111,7 +111,7 @@ void print_fingerprint(const char * filename){
 
 	pubpath = getpath(filename);
 
-	ssh_pki_import_pubkey_file(pubpath, &srv_pubkey);
+	rc = ssh_pki_import_pubkey_file(pubpath, &srv_pubkey);
 	free(pubpath);
 	if (rc < 0) {
 		return;
