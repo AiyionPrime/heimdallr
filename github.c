@@ -1,6 +1,55 @@
 #include "github.h"
 
 /*
+ * Function; concat_dir
+ *
+ * Concatenate a variable amount of paths with single '/'-signs
+ *
+ * amount: the amount of given path fragments
+ *
+ * returns: the concatenated path
+*/
+
+char *concat_dir(size_t amount, ...) {
+	char *concatenated = NULL;
+	char *reduced = NULL;
+	char joinchar = '/';
+	int i = 0;
+	va_list path_p;
+	size_t length = 0;
+
+	if (amount<1)
+		return NULL;
+
+	va_start(path_p, amount);
+	for (i=0; i<amount; i++) {
+		const char *s = va_arg(path_p, char *);
+		length += strlen(s);
+	}
+	va_end(path_p);
+
+	concatenated = malloc((length+1+amount)*sizeof(char));
+	if (NULL == concatenated)
+		return NULL;
+
+	char *dst=concatenated;
+
+	va_start(path_p, amount);
+	for (i=0; i<amount; i++) {
+		const char *s = va_arg(path_p, char *);
+		while ((*dst++ = *s++));
+		dst--;
+		*dst++ = joinchar;
+	}
+	dst--;
+	*dst++='\0';
+	va_end(path_p);
+	reduced = reduce_slashes(concatenated);
+	free(concatenated);
+	return reduced;
+}
+
+/*
  * Function: ensure_input
  *
  * asks the user to choose a number in range of zero and a given option amount

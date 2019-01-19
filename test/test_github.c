@@ -56,6 +56,27 @@ struct json_object* fetch_jobj(char *url) {
 }
 
 
+void test_concat_dir(void **state) {
+	(void) state;
+	char * ret = NULL;
+
+	ret = concat_dir(0);
+	assert_null(ret);
+
+	ret = concat_dir(2, "somedir", "file");
+	assert_string_equal("somedir/file", ret);
+	free(ret);
+
+	ret = concat_dir(3, "/test/", "somedir", "file");
+	assert_string_equal("/test/somedir/file", ret);
+	free(ret);
+
+	ret = concat_dir(2, "/somedir", "/file");
+	assert_string_equal("/somedir/file", ret);
+	free(ret);
+}
+
+
 void test_ensure_input_first_try(void ** state) {
 	(void) state;
 	int ret;
@@ -190,6 +211,7 @@ int main (void)
 {
 	const struct CMUnitTest tests [] =
 	{
+		cmocka_unit_test (test_concat_dir),
 		cmocka_unit_test (test_ensure_input_first_try),
 		cmocka_unit_test (test_ensure_input_empty_input),
 		cmocka_unit_test (test_ensure_input_too_high_input),

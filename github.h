@@ -15,6 +15,8 @@ struct MemoryStruct {
 	size_t size;
 };
 
+char *concat_dir(size_t amount, ...);
+
 int ensure_input(int options);
 
 int find_user(char *name);
