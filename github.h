@@ -25,6 +25,8 @@ int get_keys(const char *username);
 
 void free_keys(char **keys, size_t);
 
+size_t read_githubkeys(char **keys, char *username);
+
 char *reduce_slashes(char *tomodify);
 
 int validate_githubname(char* username);

@@ -41,6 +41,12 @@ int __wrap_printf(const char *format, ...) {
 	return 0;
 }
 
+
+char* __real_get_githubuser_dir(char* username);
+char* __wrap_get_githubuser_dir(char* username) {
+	return mock_ptr_type(char*);
+}
+
 void *__real__test_malloc(const size_t size, const char* file, const int line);
 void *__wrap__test_malloc(size_t size) {
 	int fail = (int) mock();
@@ -49,6 +55,33 @@ void *__wrap__test_malloc(size_t size) {
 	} else {
 		return __real__test_malloc(size, __FILE__, __LINE__);
 	}
+}
+
+extern DIR * __real_opendir(const char * path);
+extern DIR * __wrap_opendir(const char * path) {
+	return mock_ptr_type(DIR*);
+}
+
+struct dirent* __real_readdir(DIR * dirp);
+struct dirent* __wrap_readdir(DIR * dirp) {
+	return mock_ptr_type(struct dirent*);
+}
+
+int __real_closedir(DIR * dirp);
+int __wrap_closedir(DIR * dirp) {
+	return mock();
+}
+
+int __real_ssh_pki_import_pubkey_file(const char *filename, ssh_key *pkey);
+int __wrap_ssh_pki_import_pubkey_file(const char *filename, ssh_key *pkey) {
+	//TODO check_string_expected_ptr(filname);;
+	int ret = mock();
+	if (0==ret) {
+		char * b64pub = mock_ptr_type(char*);
+		enum ssh_keytypes_e keytype = SSH_KEYTYPE_RSA;
+		ssh_pki_import_pubkey_base64(b64pub, keytype, pkey);
+	}
+	return ret;
 }
 
 struct json_object* fetch_jobj(char *url) {
@@ -128,6 +161,77 @@ void test_free_keys(void **state) {
 	size_t amount=2;
 	free_keys(keys, amount);
 }
+
+void test_read_githubkeys(void **state) {
+	int ret;
+	char **keys=NULL;
+	char* fakepath = "/test/home/testuser/.config/heimdallr/githubkeys/agithubuser";
+	char* fakepath_heap=malloc((strlen(fakepath)+1)*sizeof(char));
+	struct dirent* directory;
+	char * readkeyb64 = "AAAAB3NzaC1yc2EAAAADAQABAAAAgQDPKtx0gYki7FQ6Id/pzOOQKtAoOK+CB7Bz1yTySwLEXjiTDJd5NbUbUWY3xmrIS+rni5g7E3JFLZKDLYXg3diKCYCjgSKjZ07MQEBM7e4Jf8kQE4uuxyjp/6l4/r/nRgSrrkj08bY538OXliRV/0p5uJw5RLqwkmJj+V760L9Bkw==";
+	directory = malloc(sizeof(struct dirent));
+	strcpy(directory->d_name, "somepubfile");
+	strcpy(fakepath_heap, fakepath);
+	will_return(__wrap_get_githubuser_dir, fakepath_heap);
+	will_return(__wrap_opendir, 1);
+
+	will_return(__wrap_ssh_pki_import_pubkey_file, SSH_OK);
+	will_return(__wrap_ssh_pki_import_pubkey_file, readkeyb64);
+
+	will_return(__wrap_readdir, directory);
+	will_return(__wrap_readdir, NULL);
+	will_return(__wrap_closedir, 0);
+	ret = read_githubkeys(keys, "testuser");
+	free(directory);
+	assert_int_equal(1, ret);
+}
+
+void test_read_githubkeys_many(void **state) {
+	int ret;
+	char **keys=NULL;
+	char* fakepath = "/test/home/testuser/.config/heimdallr/githubkeys/agithubuser";
+	char* fakepath_heap=malloc((strlen(fakepath)+1)*sizeof(char));
+	struct dirent* directory;
+	struct dirent* directory2;
+	char * readkeyb64 = "AAAAB3NzaC1yc2EAAAADAQABAAAAgQDPKtx0gYki7FQ6Id/pzOOQKtAoOK+CB7Bz1yTySwLEXjiTDJd5NbUbUWY3xmrIS+rni5g7E3JFLZKDLYXg3diKCYCjgSKjZ07MQEBM7e4Jf8kQE4uuxyjp/6l4/r/nRgSrrkj08bY538OXliRV/0p5uJw5RLqwkmJj+V760L9Bkw==";
+	char * readkey2b64 = "AAAAB3NzaC1yc2EAAAADAQABAAAAgQDPKtx0gYki7FQ6Id/pzOOQKtAoOK+CB7Bz1yTySwLEXjiTDJd5NbUbUWY3xmrIS+rni5g7E3JFLZKDLYXg3diKCYCjgSKjZ07MQEBM7e4Jf8kQE4uuxyjp/6l4/r/nRgSrrkj08bY538OXliRV/0p5uJw5RLqwkmJj+V760L9Bkw==";
+	directory = malloc(sizeof(struct dirent));
+	strcpy(directory->d_name, "somepubfile");
+	strcpy(fakepath_heap, fakepath);
+	directory2 = malloc(sizeof(struct dirent));
+	strcpy(directory2->d_name, "somepubfile");
+	strcpy(fakepath_heap, fakepath);
+	will_return(__wrap_get_githubuser_dir, fakepath_heap);
+	will_return(__wrap_opendir, 1);
+
+	will_return(__wrap_readdir, directory);
+	will_return(__wrap_ssh_pki_import_pubkey_file, SSH_OK);
+	will_return(__wrap_ssh_pki_import_pubkey_file, readkeyb64);
+
+	will_return(__wrap_readdir, directory2);
+	will_return(__wrap_ssh_pki_import_pubkey_file, SSH_OK);
+	will_return(__wrap_ssh_pki_import_pubkey_file, readkey2b64);
+
+	will_return(__wrap_readdir, NULL);
+	will_return(__wrap_closedir, 0);
+	ret = read_githubkeys(keys, "testuser");
+	free(directory);
+	free(directory2);
+	assert_int_equal(2, ret);
+}
+
+void test_read_githubkeys_unknown(void **state) {
+	int ret;
+	char **keys=NULL;
+	char* fakepath = "/test/home/unknownuser/";
+	char* fakepath_heap=malloc((strlen(fakepath)+1)*sizeof(char));
+	strcpy(fakepath_heap, fakepath);
+	will_return(__wrap_get_githubuser_dir, fakepath_heap);
+	will_return(__wrap_opendir, NULL);
+	ret = read_githubkeys(keys, "unknownuser");
+	assert_int_equal(0, ret);
+}
+
 
 void test_get_keys(void **state) {
 	(void) state;
@@ -219,6 +323,9 @@ int main (void)
 		cmocka_unit_test (test_get_keys),
 		cmocka_unit_test (test_find_user),
 		cmocka_unit_test (test_free_keys),
+		cmocka_unit_test (test_read_githubkeys),
+		cmocka_unit_test (test_read_githubkeys_many),
+		cmocka_unit_test (test_read_githubkeys_unknown),
 		cmocka_unit_test (test_reduce_slashes),
 		cmocka_unit_test (test_validate_githubname),
 	};

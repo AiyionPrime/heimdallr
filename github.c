@@ -276,6 +276,68 @@ void free_keys(char **keys, size_t size) {
 }
 
 /*
+ * Function: read_githubkeys
+ *
+ * Read all all available keys for a given GitHub-user from the config directory
+ *
+ * keys: a pointer to an array of strings to store the keys in
+ *
+ * username: the GitHub username whos keys to read
+ *
+ * returns: the amount of keys stored within the array
+ */
+
+size_t read_githubkeys(char **keys, char *username) {
+	if (!validate_githubname(username)) {
+		return 0;
+	}
+	char* keydirpath = get_githubuser_dir(username);
+	DIR *d;
+	struct dirent *dir;
+	ssh_key cur_pubkey = NULL;
+	char ** cur_b64key_cp = NULL;
+	char * cur_b64key = NULL;
+	int rc;
+	char * fullpath = NULL;
+	int max_keys = 32;
+	size_t keyamount = 0;
+
+	d = opendir(keydirpath);
+	if (d)
+	{
+		while ((dir = readdir(d)) != NULL)
+		{
+			if (!strcmp(dir->d_name, ".") || !strcmp(dir->d_name, ".."))
+				continue;
+			fullpath = concat_dir(3, keydirpath, "/", dir->d_name);
+
+			rc = ssh_pki_import_pubkey_file(fullpath, &cur_pubkey);
+			if (SSH_OK == rc) {
+				rc = ssh_pki_export_pubkey_base64(cur_pubkey, &cur_b64key);
+				if (SSH_OK == rc ) {
+					if (keyamount < max_keys ) {
+						keyamount++;
+						cur_b64key_cp = realloc(cur_b64key_cp, keyamount*sizeof(char*));
+						cur_b64key_cp[keyamount-1]=cur_b64key;
+					}
+				} else {
+					printf("SSH_ERROR\n");
+				}
+			} else {
+				printf("%d\n", rc);
+			}
+			ssh_key_free(cur_pubkey);
+			free(fullpath);
+		}
+		closedir(d);
+	}
+	free_keys(cur_b64key_cp, keyamount);
+
+	free(keydirpath);
+	return keyamount;
+}
+
+/*
  * Function: reduce_slashes
  *
  * Produce a copy of a string without duplicate consecutive slashes
