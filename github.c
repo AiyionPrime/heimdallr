@@ -1,6 +1,4 @@
 #include "github.h"
-#include <string.h>
-#include <curl/curl.h>
 
 /*
  * Function: ensure_input
@@ -206,6 +204,26 @@ int find_user(char *name)
 	}
 	json_object_put(jobj);
 	return EXIT_SUCCESS;
+}
+
+/*
+ * Function: free_keys
+ *
+ * Free an array of strings containing a GitHub-users keys
+ *
+ * keys: an array of keys to free
+ *
+ * keyamount: the size of the keyarray
+ *
+ * returns: nothing
+ */
+
+void free_keys(char **keys, size_t size) {
+	int i;
+	for (i=0; i<size; i++) {
+		free(keys[i]);
+	}
+	free(keys);
 }
 
 /*

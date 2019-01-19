@@ -87,6 +87,16 @@ void test_ensure_input_thrice(void ** state) {
 	assert_int_equal(ret, 0);
 }
 
+void test_free_keys(void **state) {
+	char **keys;
+
+	keys = malloc(2*sizeof(char*));
+	keys[0] = malloc((70+1)*sizeof(char));
+	keys[1] = malloc((70+1)*sizeof(char));
+
+	size_t amount=2;
+	free_keys(keys, amount);
+}
 
 void test_get_keys(void **state) {
 	(void) state;
@@ -154,6 +164,7 @@ int main (void)
 		cmocka_unit_test (test_ensure_input_thrice),
 		cmocka_unit_test (test_get_keys),
 		cmocka_unit_test (test_find_user),
+		cmocka_unit_test (test_free_keys),
 		cmocka_unit_test (test_validate_githubname),
 	};
 

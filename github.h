@@ -21,6 +21,8 @@ int find_user(char *name);
 
 int get_keys(const char *username);
 
+void free_keys(char **keys, size_t);
+
 int validate_githubname(char* username);
 
 size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp);
