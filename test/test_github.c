@@ -142,6 +142,28 @@ void test_find_user(void **state) {
 	assert_int_equal(ret, 0);
 }
 
+void test_reduce_slashes(void **state) {
+	(void) state;
+	char *s1 = "//some///slashes////";
+	char *s2 = "no/reduce";
+	char *s3 = "nnoo/rreedduuccee/";
+	char *r1;
+	char *r2;
+	char *r3;
+
+	r1 = reduce_slashes(s1);
+	assert_string_equal(r1, "/some/slashes/");
+	free(r1);
+
+	r2 = reduce_slashes(s2);
+	assert_string_equal(r2, s2);
+	free(r2);
+
+	r3 = reduce_slashes(s3);
+	assert_string_equal(r3, s3);
+	free(r3);
+}
+
 void test_validate_githubname(void ** state) {
 	(void) state;
 	assert_int_equal(1, validate_githubname("test"));
@@ -175,6 +197,7 @@ int main (void)
 		cmocka_unit_test (test_get_keys),
 		cmocka_unit_test (test_find_user),
 		cmocka_unit_test (test_free_keys),
+		cmocka_unit_test (test_reduce_slashes),
 		cmocka_unit_test (test_validate_githubname),
 	};
 

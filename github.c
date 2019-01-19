@@ -227,6 +227,35 @@ void free_keys(char **keys, size_t size) {
 }
 
 /*
+ * Function: reduce_slashes
+ *
+ * Produce a copy of a string without duplicate consecutive slashes
+ *
+ * tomodify: the string holding a path, possibly with redundant slashes to remove
+ *
+ * returns: qualitatively the same path as the input, but with no duplicate slashes
+ */
+
+char *reduce_slashes(char *tomodify) {
+	size_t i, c=0;
+	char *new;
+
+	for (i=0; tomodify[i] != '\0'; i++) {
+		c += (tomodify[i] != tomodify[i+1] || tomodify[i] != '/');
+	}
+
+	new = malloc(c+1);
+
+	for (i=c=0; tomodify[i] != '\0'; i++) {
+		if (tomodify[i] != tomodify[i+1] || tomodify[i] != '/') {
+			new[c++] = tomodify[i];
+		}
+	}
+	new[c]='\0';
+	return new;
+}
+
+/*
  * Function: validate_githubname
  *
  * determine, whether a github username may be valid or not
