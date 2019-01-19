@@ -41,6 +41,16 @@ int __wrap_printf(const char *format, ...) {
 	return 0;
 }
 
+void *__real__test_malloc(const size_t size, const char* file, const int line);
+void *__wrap__test_malloc(size_t size) {
+	int fail = (int) mock();
+	if (fail) {
+		return NULL;
+	} else {
+		return __real__test_malloc(size, __FILE__, __LINE__);
+	}
+}
+
 struct json_object* fetch_jobj(char *url) {
 	return mock_ptr_type(json_object*);
 }
