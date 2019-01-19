@@ -19,7 +19,6 @@ int ensure_input(int options)
 {
 	char *line = NULL;
 	size_t n;
-	int res;
 	if (options<1) {
 		printf("Error: there are no options.\n");
 		return -1;
@@ -27,19 +26,13 @@ int ensure_input(int options)
 	int input=-1, status;
 	while (input < 0 || input >= options) {
 		printf("Specify a target in range [0..%i]:\n", options-1);
-		res = getline(&line, &n, stdin);
-		if (line[res - 1] == '\n') {
-			line[res-1] = '\0';
-		}
+		getline(&line, &n, stdin);
 		status = sscanf(line, "%d", &input);
 		free(line);
 		line = NULL;
 		while (status != 1) {
 			printf("Invalid Input.\nSpecify a target in range [0..%i]:\n", options-1);
-			res = getline(&line, &n, stdin);
-			if (line[res - 1] == '\n') {
-				line[res-1] = '\0';
-			}
+			getline(&line, &n, stdin);
 			status = sscanf(line, "%d", &input);
 			free(line);
 			line = NULL;
@@ -216,7 +209,37 @@ int find_user(char *name)
 }
 
 /*
- * Function WriteMemoryCallback
+ * Function: validate_githubname
+ *
+ * determine, whether a github username may be valid or not
+ *
+ * username: the username to validate
+ *
+ * returns: 1 if the username is valid and 0, if not
+ */
+
+int validate_githubname(char* username) {
+	regex_t regex;
+	int retint;
+	int ret;
+	retint = regcomp(&regex, "^[a-zA-Z0-9][a-zA-Z0-9\\-]\\{0,38\\}$", 0);
+	retint = regexec(&regex, username, 0, NULL, 0);
+	if (!retint) {
+		ret = 1;
+	} else if (retint == REG_NOMATCH) {
+		ret = 0;
+	} else {
+		regerror(retint, &regex, username, sizeof(username));
+		fprintf(stderr, "Regex match failed: %s\n", username);
+		regfree(&regex);
+		exit(1);
+	}
+	regfree(&regex);
+	return ret;
+}
+
+/*
+ * Function: WriteMemoryCallback
  *
  * A callback function to stepwise increase the size of a memory struct by one, as needed,
  * in order to store data of priorly unknown size in ram, primarily used for curl requests

@@ -122,6 +122,18 @@ void test_find_user(void **state) {
 	assert_int_equal(ret, 0);
 }
 
+void test_validate_githubname(void ** state) {
+	(void) state;
+	assert_int_equal(1, validate_githubname("test"));
+	assert_int_equal(0, validate_githubname("-test"));
+	assert_int_equal(1, validate_githubname("test-test"));
+	assert_int_equal(1, validate_githubname("1234-test-test"));
+	assert_int_equal(0, validate_githubname("0000000000000000000000000000000000000000"));
+	assert_int_equal(1, validate_githubname("000000000000000000000000000000000000000"));
+	assert_int_equal(0, validate_githubname(""));
+	assert_int_equal(1, validate_githubname("B"));
+}
+
 int setup (void ** state)
 {
 	return 0;
@@ -142,6 +154,7 @@ int main (void)
 		cmocka_unit_test (test_ensure_input_thrice),
 		cmocka_unit_test (test_get_keys),
 		cmocka_unit_test (test_find_user),
+		cmocka_unit_test (test_validate_githubname),
 	};
 
 	int count_fail_tests =
