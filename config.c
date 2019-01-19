@@ -231,6 +231,30 @@ int generate_pubkey_from_private(char * private){
 }
 
 /*
+ * Function; get_githubuser_dir
+ *
+ * builds the path to the keydirectory of a useraccount
+ *
+ * username: the username whoms keydirectory to list
+ *
+ * returns: the full path of a keydirectory by concatenating the current homedir,
+ *          the config folder, as well as the keydirectories structure
+ *          like this: <homedir>/.config/heimdallr/githubkeys/<username>
+ */
+
+char* get_githubuser_dir(char* username) {
+	char *keydir = "githubkeys/";
+	char *keydirpath = getpath(keydir);
+	char *keypath;
+	int len = strlen(keydirpath)+strlen(username)+1;
+	keypath = (char *)calloc(sizeof(char), len);
+	strcat(keypath, keydirpath);
+	strcat(keypath, username);
+	free(keydirpath);
+	return keypath;
+}
+
+/*
  * Function: ssh_pki_export_pubkey_file
  *
  * Export a public key to a file on disk in OpenSSH format.

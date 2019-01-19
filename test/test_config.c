@@ -45,7 +45,7 @@ void test_ensure_config_dir(void **state) {
         int ret;
         char *fakehome="/testhome/test";
 
-        will_return_count(homedir, fakehome, 2);
+        will_return_count(homedir, fakehome, 3);
         ret = ensure_config_dir();
         assert_int_equal(0, ret);
 }

@@ -20,6 +20,8 @@ int generate_key();
 
 int generate_pubkey_from_private(char * private);
 
+char* get_githubuser_dir(char* username);
+
 int ssh_pki_export_pubkey_file(const ssh_key pubkey, const char * filename);
 
 int ensure_private_key_permission();
