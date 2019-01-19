@@ -14,6 +14,8 @@ char* getpath(const char* filename);
 
 int ensure_config_dir();
 
+int ensure_githubuser_dir(char * username);
+
 int ensure_directory(char *directory);
 
 int generate_key();

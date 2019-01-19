@@ -94,7 +94,7 @@ int ensure_directory(char *directory){
 /*
  * Function: ensure_config_dir
  *
- * creates the directory structure '<homedir>/.config/heimdallr/', if it does not exist
+ * creates the directory structure '<homedir>/.config/heimdallr/githubkeys/', if it does not exist
  *
  * returns: 0 if it succeeded, a -1 if not
  */
@@ -115,9 +115,30 @@ int ensure_config_dir(){
 	if (0 == ret){
 		ret = ensure_directory(dir_path);
 	}
+	if (0 == ret){
+		ret = ensure_githubuser_dir("");
+	}
 
 	free(config_path);
 	free(dir_path);
+	return ret;
+}
+
+/*
+ * Function: ensure_githubuser_dir
+ *
+ * creates a directory for a githubuser in the config directory
+ *
+ * returns: 0 if successful, -1 if not
+ */
+
+int ensure_githubuser_dir(char * username){
+	int ret = 0;
+	char* keypath = get_githubuser_dir(username);
+
+	ret = ensure_directory(keypath);
+	free(keypath);
+
 	return ret;
 }
 
