@@ -14,6 +14,11 @@ struct UserPubkey{
 	char *comment;
 	struct UserPubkey * next;
 };
+
+int contains(struct UserPubkey, ssh_key);
+
 int count(struct UserPubkey*);
+
+int holds(struct UserPubkey, ssh_key);
 
 #endif //KEYS_HEIMDALLR_H_
