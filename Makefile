@@ -6,6 +6,7 @@ CFLAGS = -Wall -Werror -DGIT_VERSION=\"$(GIT_VERSION)\" -DVERSION=\"$(VERSION)\"
 MOCKS_SSHSERVER = fopen ssh_channel_read ssh_pki_import_pubkey_file ssh_print_hash
 MOCKS_CONFIG = mkdir
 MOCKS_GITHUB = getline get_githubuser_dir _test_malloc opendir readdir ssh_pki_import_pubkey_file closedir printf
+MOCKS_KEYS = printf
 
 LDLIBS = -lcurl -ljson-c -lcrypto -lssh
 #LDFLAGS = -Lusr/local/lib 
@@ -18,7 +19,7 @@ TESTFLAGS_GITHUB += $(foreach MOCK,$(MOCKS_GITHUB),-Wl,--wrap=$(MOCK))
 TESTFLAGS_SSHSERVER += $(foreach MOCK,$(MOCKS_SSHSERVER),-Wl,--wrap=$(MOCK))
 
 MAN = heimdallr.1
-SOURCES = heimdallr.c config.c sshserver.c github.c
+SOURCES = heimdallr.c config.c keys.c sshserver.c github.c
 OUT = heimdallr
 OBJ = $(src:.c=.o)
 
@@ -34,6 +35,7 @@ build: $(SOURCES) compiler_flags
 clean:
 	rm -f $(OBJ) $(OUT) $(MAN).gz
 	rm -f test/test_config
+	rm -f test/test_keys
 	rm -f test/test_github
 	rm -f test/test_sshserver
 
@@ -65,6 +67,9 @@ compiler_flags: force
 compile-check-config:
 	$(CC) -o test/test_config $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test_config.c config.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS_CONFIG) $(TESTFLAGS)
 
+compile-check-keys:
+	$(CC) -o test/test_keys $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test_keys.c keys.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS_KEYS) $(TESTFLAGS)
+
 compile-check-github:
 	$(CC) -o test/test_github $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test_github.c github.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS_GITHUB) $(TESTFLAGS)
 
@@ -73,7 +78,8 @@ compile-check-sshserver:
 
 
 .PHONY: check
-check: clean compile-check-config compile-check-github compile-check-sshserver
+check: clean compile-check-config compile-check-keys compile-check-github compile-check-sshserver
 	./test/test_config
+	./test/test_keys
 	./test/test_github
 	./test/test_sshserver
