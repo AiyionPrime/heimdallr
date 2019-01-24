@@ -44,6 +44,22 @@ void test_struct(void **state) {
 	ssh_key_free(*(upk.pubkey));
 }
 
+void test_count(void **state) {
+	(void) state;
+	int ret = 0;
+
+	struct UserPubkey *upk;
+	struct UserPubkey *upk2;
+	upk = malloc(sizeof(struct UserPubkey));
+	upk2 = malloc(sizeof(struct UserPubkey));
+	upk->next = upk2;
+
+	ret = count(upk);
+	free(upk);
+	free(upk2);
+	assert_int_equal(ret, 2);
+}
+
 int setup (void ** state)
 {
 	return 0;
@@ -59,6 +75,7 @@ int main (void)
 	const struct CMUnitTest tests [] =
 	{
 		cmocka_unit_test(test_struct),
+		cmocka_unit_test(test_count),
 	};
 
 	int count_fail_tests =

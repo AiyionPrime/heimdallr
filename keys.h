@@ -1,6 +1,7 @@
 #ifndef KEYS_HEIMDALLR_H_
 #include <stdlib.h>
 #include <dirent.h>
+#include <string.h>
 #include <stdarg.h>
 
 #include <libssh/libssh.h>
@@ -13,4 +14,6 @@ struct UserPubkey{
 	char *comment;
 	struct UserPubkey * next;
 };
+int count(struct UserPubkey*);
+
 #endif //KEYS_HEIMDALLR_H_
