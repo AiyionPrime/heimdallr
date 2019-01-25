@@ -42,6 +42,35 @@ void test_struct(void **state) {
 	assert_null(upk.next);
 
 	ssh_key_free(*(upk.pubkey));
+	free(upk.pubkey);
+}
+
+void test_contains(void **state) {
+	(void) state;
+	int ret = 0;
+
+	struct UserPubkey upk2 = {
+		"testuser2",
+		generate_testpubkey(1),
+		"testuser2@github",
+		NULL
+	};
+	struct UserPubkey upk = {
+		"testuser",
+		generate_testpubkey(0),
+		"testuser@github",
+		&upk2
+	};
+	ssh_key* reference = generate_testpubkey(1);
+
+	ret = contains(upk, *reference);
+	ssh_key_free(*(upk.pubkey));
+	free(upk.pubkey);
+	ssh_key_free(*(upk2.pubkey));
+	free(upk2.pubkey);
+	ssh_key_free(*reference);
+	free(reference);
+	assert_int_equal(ret, 1);
 }
 
 void test_count(void **state) {
@@ -84,7 +113,12 @@ void test_holds(void **state) {
 	ret2 = holds(upk2, *reference);
 
 	ssh_key_free(*(upk.pubkey));
-	free(*(upk2.pubkey));
+	free(upk.pubkey);
+	ssh_key_free(*(upk2.pubkey));
+	free(upk2.pubkey);
+	ssh_key_free(*reference);
+	free(reference);
+
 	assert_int_equal(ret, 0);
 	assert_int_equal(ret2, 1);
 }
