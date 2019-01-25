@@ -79,8 +79,8 @@ void test_count(void **state) {
 
 	struct UserPubkey *upk;
 	struct UserPubkey *upk2;
-	upk = malloc(sizeof(struct UserPubkey));
-	upk2 = malloc(sizeof(struct UserPubkey));
+	upk = calloc(1,sizeof(struct UserPubkey));
+	upk2 = calloc(1,sizeof(struct UserPubkey));
 	upk->next = upk2;
 
 	ret = count(upk);
@@ -138,6 +138,7 @@ int main (void)
 	const struct CMUnitTest tests [] =
 	{
 		cmocka_unit_test(test_struct),
+		cmocka_unit_test(test_contains),
 		cmocka_unit_test(test_count),
 		cmocka_unit_test(test_holds),
 	};
