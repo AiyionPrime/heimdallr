@@ -21,4 +21,6 @@ int count(struct UserPubkey*);
 
 int holds(struct UserPubkey, ssh_key);
 
+int free_last(struct UserPubkey*);
+
 #endif //KEYS_HEIMDALLR_H_

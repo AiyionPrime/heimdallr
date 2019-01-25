@@ -45,6 +45,38 @@ int count(struct UserPubkey *upk) {
 }
 
 /*
+ * Function: free_last
+ *
+ * frre the last struct in the list of UserPubkeys
+ *
+ * upk: the list to remove an item from
+ *
+ * returns: the amount of removed nodes (1 or 0)
+ */
+
+int free_last(struct UserPubkey *upk) {
+	struct UserPubkey *current = upk;
+
+	if (NULL == upk->next) {
+		ssh_key_free(*(upk->pubkey));
+		free(upk->pubkey);
+		free(upk);
+		return 1;
+	}
+
+	//find the secondlast node
+	while (NULL != current->next->next) {
+		current = current->next;
+	}
+
+	ssh_key_free(*(current->next->pubkey));
+	free(current->next->pubkey);
+	free(current->next);
+	current->next = NULL;
+	return 1;
+}
+
+/*
  * Fucntion: holds
  *
  * return, whether a specific UserPubkey contains a given libssh pubkey
