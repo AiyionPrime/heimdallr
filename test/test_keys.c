@@ -89,6 +89,28 @@ void test_count(void **state) {
 	assert_int_equal(ret, 2);
 }
 
+void test_free_all(void **state) {
+	(void) state;
+	int ret = -1;
+
+	struct UserPubkey *upk_p=NULL;
+	struct UserPubkey *upk2_p=NULL;
+	upk_p = calloc(1,sizeof(struct UserPubkey));
+	upk2_p = calloc(1,sizeof(struct UserPubkey));
+	if (NULL == upk_p){
+		return;
+	}
+	if (NULL == upk2_p){
+		return;
+	}
+	upk_p->next = upk2_p;
+	upk_p->pubkey = generate_testpubkey(0);
+	upk2_p->pubkey = generate_testpubkey(1);
+
+	ret = free_all(upk_p);
+	assert_int_equal(2, ret);
+}
+
 void test_free_last(void **state) {
 	(void) state;
 	int ret = -1;
@@ -169,6 +191,7 @@ int main (void)
 		cmocka_unit_test(test_contains),
 		cmocka_unit_test(test_count),
 		cmocka_unit_test(test_holds),
+		cmocka_unit_test(test_free_all),
 		cmocka_unit_test(test_free_last),
 	};
 

@@ -45,6 +45,24 @@ int count(struct UserPubkey *upk) {
 }
 
 /*
+ * Function: free_all
+ *
+ * upk: the list off UserPubkeys to free
+ *
+ * returns: the amount of freed UserPubkeys
+ */
+
+int free_all(struct UserPubkey *upk) {
+	int ret = 0;
+	int ctr = count(upk);
+
+	for (; ctr>0; ctr--) {
+		ret += free_last(upk);
+	}
+	return ret;
+}
+
+/*
  * Function: free_last
  *
  * frre the last struct in the list of UserPubkeys
