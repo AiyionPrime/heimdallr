@@ -17,6 +17,8 @@ struct UserPubkey{
 
 int add_if_not_exist(struct UserPubkey*, struct UserPubkey*);
 
+char* build_content(struct UserPubkey*);
+
 int contains(struct UserPubkey, ssh_key);
 
 int count(struct UserPubkey*);

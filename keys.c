@@ -26,6 +26,33 @@ int add_if_not_exist(struct UserPubkey *upk, struct UserPubkey *upk2) {
 }
 
 /*
+ * Function: build_content
+ *
+ * create a concatenation of keytype, base64 representation and comment of the pubkey
+ *
+ * upk: the UserPubkey to stringify
+ *
+ * returns: a string containing the contents - the caller needs to free this
+ */
+
+char* build_content(struct UserPubkey *upk) {
+	char *new_content=NULL;
+	char *b64;
+	ssh_pki_export_pubkey_base64(*(upk->pubkey), &b64);
+	const char *type = ssh_key_type_to_char(ssh_key_type(*(upk->pubkey)));
+	new_content=calloc(strlen(type)+1+strlen(b64)+1+strlen(upk->comment)+1, sizeof(char));
+	strcpy(new_content, type);
+	strcat(new_content, " ");
+	strcat(new_content, b64);
+	strcat(new_content, " ");
+	strcat(new_content, upk->comment);
+
+	free(b64);
+
+	return new_content;
+}
+
+/*
  * Function: contains
  *
  * return, whether a public ssh_key is part of the linked list
