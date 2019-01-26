@@ -1,6 +1,31 @@
 #include "keys.h"
 
 /*
+ * Function: add_if_not_exits
+ *
+ * add a UserPubkey to the linked list, if it's not already part of it
+ *
+ * upk: the UserPubkey to add
+ *
+ * returns: how often the key was added, -1 if something went wrong
+ */
+
+int add_if_not_exist(struct UserPubkey *upk, struct UserPubkey *upk2) {
+	struct UserPubkey * current = upk;
+
+	if (contains(*upk, *(upk2->pubkey))) {
+		return 0;
+	}
+
+	while (NULL != current->next) {
+		current = current->next;
+	}
+
+	current->next = upk2;
+	return 1;
+}
+
+/*
  * Function: contains
  *
  * return, whether a public ssh_key is part of the linked list

@@ -45,6 +45,27 @@ void test_struct(void **state) {
 	free(upk.pubkey);
 }
 
+void test_add_if_not_exist(void **state) {
+	(void) state;
+	int ret = -1;
+	int ret2 = -1;
+
+	struct UserPubkey *upk_p=NULL;
+	struct UserPubkey *upk2_p=NULL;
+	upk_p = calloc(1,sizeof(struct UserPubkey));
+	upk2_p = calloc(1,sizeof(struct UserPubkey));
+	upk_p->pubkey = generate_testpubkey(0);
+	upk2_p->pubkey = generate_testpubkey(1);
+
+	ret = add_if_not_exist(upk_p, upk2_p);
+	ret2 = add_if_not_exist(upk_p, upk2_p);
+
+	free_all(upk_p);
+
+	assert_int_equal(1, ret);
+	assert_int_equal(0, ret2);
+}
+
 void test_contains(void **state) {
 	(void) state;
 	int ret = 0;
@@ -188,6 +209,7 @@ int main (void)
 	const struct CMUnitTest tests [] =
 	{
 		cmocka_unit_test(test_struct),
+		cmocka_unit_test(test_add_if_not_exist),
 		cmocka_unit_test(test_contains),
 		cmocka_unit_test(test_count),
 		cmocka_unit_test(test_holds),
