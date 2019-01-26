@@ -21,6 +21,8 @@ int contains(struct UserPubkey, ssh_key);
 
 int count(struct UserPubkey*);
 
+struct UserPubkey *create_userpubkey(char* username, ssh_key* pubkey, char *comment);
+
 int holds(struct UserPubkey, ssh_key);
 
 int free_last(struct UserPubkey*);

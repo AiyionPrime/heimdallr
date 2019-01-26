@@ -110,6 +110,23 @@ void test_count(void **state) {
 	assert_int_equal(ret, 2);
 }
 
+void test_create_userpubkey(void **state) {
+	(void) state;
+	struct UserPubkey *upk;
+	upk = create_userpubkey("testuser", generate_testpubkey(0),"testuser@host");
+
+	assert_string_equal("testuser", upk->username);
+	assert_int_equal(1, ssh_key_is_public(*(upk->pubkey)));
+	assert_string_equal("testuser@host", upk->comment);
+	assert_null(upk->next);
+
+	free(upk->username);
+	ssh_key_free(*(upk->pubkey));
+	free(upk->pubkey);
+	free(upk->comment);
+	free(upk);
+}
+
 void test_free_all(void **state) {
 	(void) state;
 	int ret = -1;
@@ -212,6 +229,7 @@ int main (void)
 		cmocka_unit_test(test_add_if_not_exist),
 		cmocka_unit_test(test_contains),
 		cmocka_unit_test(test_count),
+		cmocka_unit_test(test_create_userpubkey),
 		cmocka_unit_test(test_holds),
 		cmocka_unit_test(test_free_all),
 		cmocka_unit_test(test_free_last),

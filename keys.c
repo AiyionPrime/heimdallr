@@ -70,6 +70,32 @@ int count(struct UserPubkey *upk) {
 }
 
 /*
+ * Function: create_userpubkey
+ *
+ * create a new userpubkey struct from the given values
+ *
+ * username: the users human readable identifier
+ *
+ * pubkey: the libssh pubkey to represent (this ssh_key instance will be wrapped by the struct)
+ *
+ * comment: the string describing details of the ssh key
+ *
+ * returns: all the above bundled as a struct called UserPubkey
+ */
+
+struct UserPubkey *create_userpubkey(char* username, ssh_key* pubkey, char *comment) {
+	struct UserPubkey *new;
+	new = calloc(1, sizeof(struct UserPubkey));
+	new->username=calloc(strlen(username)+1, sizeof(char));
+	strcpy(new->username, username);
+	new->pubkey = pubkey;
+	new->comment=calloc(strlen(comment)+1, sizeof(char));
+	strcpy(new->comment, comment);
+	new->next=NULL;
+	return new;
+}
+
+/*
  * Function: free_all
  *
  * upk: the list off UserPubkeys to free
@@ -112,8 +138,10 @@ int free_last(struct UserPubkey *upk) {
 		current = current->next;
 	}
 
+	free(current->next->username);
 	ssh_key_free(*(current->next->pubkey));
 	free(current->next->pubkey);
+	free(current->next->comment);
 	free(current->next);
 	current->next = NULL;
 	return 1;
