@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdarg.h>
 
+#include <stdio.h>
+
 #include <libssh/libssh.h>
 
 #define KEYS_HEIMDALLR_H_
@@ -30,5 +32,7 @@ int holds(struct UserPubkey, ssh_key);
 int free_last(struct UserPubkey*);
 
 int free_all(struct UserPubkey*);
+
+int print_content(struct UserPubkey*);
 
 #endif //KEYS_HEIMDALLR_H_

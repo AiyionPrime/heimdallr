@@ -187,3 +187,21 @@ int free_last(struct UserPubkey *upk) {
 int holds(struct UserPubkey upk, ssh_key pubkey) {
 	return !ssh_key_cmp(*(upk.pubkey), pubkey, 0);
 }
+
+/*
+ * Function: print_content
+ *
+ * print the concatenation of keytype, base64 encoded key and its comment
+ *
+ * upk: the UserPubkey to print
+ *
+ * returns: the number of printed characters
+ */
+
+int print_content(struct UserPubkey *upk) {
+	char *content = build_content(upk);
+	int ret=0;
+	ret = printf(content);
+	free(content);
+	return ret;
+}

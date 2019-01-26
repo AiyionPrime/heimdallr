@@ -15,6 +15,7 @@ TESTLIBS = -lcmocka
 TESTFLAGS =
 
 TESTFLAGS_CONFIG += $(foreach MOCK,$(MOCKS_CONFIG),-Wl,--wrap=$(MOCK))
+TESTFLAGS_KEYS += $(foreach MOCK,$(MOCKS_KEYS),-Wl,--wrap=$(MOCK))
 TESTFLAGS_GITHUB += $(foreach MOCK,$(MOCKS_GITHUB),-Wl,--wrap=$(MOCK))
 TESTFLAGS_SSHSERVER += $(foreach MOCK,$(MOCKS_SSHSERVER),-Wl,--wrap=$(MOCK))
 
