@@ -40,10 +40,10 @@ int add_if_not_exist(struct UserPubkey *upk, struct UserPubkey *upk2) {
 int contains(struct UserPubkey upk, ssh_key pubkey) {
 	struct UserPubkey * current=&upk;
 	while (current!=NULL) {
-		current = current->next;
 		if (holds(*(current), pubkey)) {
 			return 1;
 		}
+		current = current->next;
 	}
 	return 0;
 }
