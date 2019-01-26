@@ -254,6 +254,48 @@ void test_print_content(void **state) {
 	assert_int_equal(ret, 226);
 }
 
+void test_print_keys(void **state) {
+	(void) state;
+	int ret=-1;
+	int ret2=-1;
+	struct UserPubkey *upk;
+	struct UserPubkey *upk2;
+
+	upk = calloc(1, sizeof(struct UserPubkey));
+	upk->pubkey = generate_testpubkey(0);
+	upk->username=calloc(strlen("testuser")+1, sizeof(char));
+	upk->comment=calloc(strlen("testuser@host")+1, sizeof(char));
+	strcpy(upk->username, "testuser");
+	strcpy(upk->comment, "testuser@host");
+	upk2 = calloc(1, sizeof(struct UserPubkey));
+	upk2->pubkey = generate_testpubkey(1);
+	upk2->username=calloc(strlen("testuser2")+1, sizeof(char));
+	upk2->comment=calloc(strlen("testuser2@host")+1, sizeof(char));
+	strcpy(upk2->username, "testuser2");
+	strcpy(upk2->comment, "testuser2@host");
+
+	will_return(__wrap_printf, 226);
+	ret = print_keys(upk);
+	upk->next = upk2;
+	will_return(__wrap_printf, 226);
+	will_return(__wrap_printf, 228);
+	ret2 = print_keys(upk);
+
+	free(upk->username);
+	ssh_key_free(*(upk->pubkey));
+	free(upk->pubkey);
+	free(upk->comment);
+	free(upk);
+	free(upk2->username);
+	ssh_key_free(*(upk2->pubkey));
+	free(upk2->pubkey);
+	free(upk2->comment);
+	free(upk2);
+
+	assert_int_equal(1, ret);
+	assert_int_equal(2, ret2);
+}
+
 int setup (void ** state)
 {
 	return 0;
@@ -278,6 +320,7 @@ int main (void)
 		cmocka_unit_test(test_free_all),
 		cmocka_unit_test(test_free_last),
 		cmocka_unit_test(test_print_content),
+		cmocka_unit_test(test_print_keys),
 	};
 
 	int count_fail_tests =

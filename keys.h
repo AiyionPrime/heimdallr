@@ -33,6 +33,8 @@ int free_last(struct UserPubkey*);
 
 int free_all(struct UserPubkey*);
 
+int print_keys(struct UserPubkey*);
+
 int print_content(struct UserPubkey*);
 
 #endif //KEYS_HEIMDALLR_H_

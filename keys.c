@@ -189,6 +189,27 @@ int holds(struct UserPubkey upk, ssh_key pubkey) {
 }
 
 /*
+ * Function: print_keys
+ *
+ * Print all pubkeys, in pubkeyfile format
+ *
+ * upk: the list of UserPubkeys to print
+ *
+ * returns: the amount of printed keys
+ */
+
+int print_keys(struct UserPubkey *upk) {
+	int amount=0;
+	struct UserPubkey *current = upk;
+	amount+=(0<print_content(current));
+	while (NULL != current->next) {
+		current = current->next;
+		amount+=(0<print_content(current));
+	}
+	return amount;
+}
+
+/*
  * Function: print_content
  *
  * print the concatenation of keytype, base64 encoded key and its comment
