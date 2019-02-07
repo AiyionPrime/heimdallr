@@ -58,7 +58,7 @@ void test_print_fingerprint(void ** state) {
 	will_return(getpath, strdup("/test/testpubkeyfile"));
 	will_return(__wrap_ssh_pki_import_pubkey_file, 0);
 	expect_value(__wrap_ssh_print_hash, len, 32);
-	expect_string(__wrap_ssh_print_hash, hash, "\261\357D~3\272!G\317\301ֳ\f\212+\325d\217\bPӬ\326\360\350\314)3\243=\312R");
+	expect_string(__wrap_ssh_print_hash, hash, "\261\357D~3\272!G\317\301ֳ\f\212+\325d\217\bPӬ\326\360\350\314)3\243=\312R\0");
 	print_fingerprint("testpubkeyfile");
 }
 
