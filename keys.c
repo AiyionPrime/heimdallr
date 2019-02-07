@@ -186,6 +186,8 @@ int free_last(struct UserPubkey *upk) {
 	struct UserPubkey *current = upk;
 
 	if (NULL == upk->next) {
+		free(current->username);
+		free(current->comment);
 		ssh_key_free(*(upk->pubkey));
 		free(upk->pubkey);
 		free(upk);

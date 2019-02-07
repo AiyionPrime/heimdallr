@@ -100,8 +100,6 @@ void test_build_filename(void **state) {
 	strcpy(upk->comment, "testuser@github");
 
 	result = build_filename(upk);
-	free(upk->username);
-	free(upk->comment);
 	free_all(upk);
 	assert_string_equal(expected, result);
 	free(result);
