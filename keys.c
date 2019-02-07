@@ -141,7 +141,7 @@ int count(struct UserPubkey *upk) {
  * returns: all the above bundled as a struct called UserPubkey
  */
 
-struct UserPubkey *create_userpubkey(char* username, ssh_key* pubkey, char *comment) {
+struct UserPubkey *create_userpubkey(const char* username, ssh_key* pubkey, const char *comment) {
 	struct UserPubkey *new;
 	new = calloc(1, sizeof(struct UserPubkey));
 	new->username=calloc(strlen(username)+1, sizeof(char));

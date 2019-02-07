@@ -27,7 +27,7 @@ int contains(struct UserPubkey, ssh_key);
 
 int count(struct UserPubkey*);
 
-struct UserPubkey *create_userpubkey(char* username, ssh_key* pubkey, char *comment);
+struct UserPubkey *create_userpubkey(const char* username, ssh_key* pubkey, const char *comment);
 
 int holds(struct UserPubkey, ssh_key);
 
