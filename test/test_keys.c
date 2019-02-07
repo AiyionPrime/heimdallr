@@ -92,7 +92,7 @@ void test_build_filename(void **state) {
 	char* result;
 
 	struct UserPubkey *upk;
-	upk = malloc(sizeof(struct UserPubkey));
+	upk = calloc(1, sizeof(struct UserPubkey));
 	upk->pubkey = generate_testpubkey(0);
 	upk->username=calloc(strlen("testuser")+1, sizeof(char));
 	upk->comment=calloc(strlen("testuser@github")+1, sizeof(char));
@@ -100,6 +100,8 @@ void test_build_filename(void **state) {
 	strcpy(upk->comment, "testuser@github");
 
 	result = build_filename(upk);
+	free(upk->username);
+	free(upk->comment);
 	free_all(upk);
 	assert_string_equal(expected, result);
 	free(result);
@@ -332,6 +334,8 @@ void test_read_ssh_key_oneline(void **state) {
 	free(b64);
 	ssh_key_free(*key);
 	ssh_key_free(*reference);
+	free(key);
+	free(reference);
 
 }
 
