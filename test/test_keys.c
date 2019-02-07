@@ -86,6 +86,25 @@ void test_build_content(void **state) {
 	free(stringified);
 }
 
+void test_build_filename(void **state) {
+	(void) state;
+	char* expected = "752700c40a96ffb72d2b7ac6a18ce7c8.pub";
+	char* result;
+
+	struct UserPubkey *upk;
+	upk = malloc(sizeof(struct UserPubkey));
+	upk->pubkey = generate_testpubkey(0);
+	upk->username=calloc(strlen("testuser")+1, sizeof(char));
+	upk->comment=calloc(strlen("testuser@github")+1, sizeof(char));
+	strcpy(upk->username, "testuser");
+	strcpy(upk->comment, "testuser@github");
+
+	result = build_filename(upk);
+	free_all(upk);
+	assert_string_equal(expected, result);
+	free(result);
+}
+
 void test_contains(void **state) {
 	(void) state;
 	int ret = 0;
@@ -296,6 +315,26 @@ void test_print_keys(void **state) {
 	assert_int_equal(2, ret2);
 }
 
+void test_read_ssh_key_oneline(void **state) {
+	(void) state;
+	int res=0;
+	ssh_key *key=NULL;
+	ssh_key *reference = generate_testpubkey(0);
+	const char *input = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQDPKtx0gYki7FQ6Id/pzOOQKtAoOK+CB7Bz1yTySwLEXjiTDJd5NbUbUWY3xmrIS+rni5g7E3JFLZKDLYXg3diKCYCjgSKjZ07MQEBM7e4Jf8kQE4uuxyjp/6l4/r/nRgSrrkj08bY538OXliRV/0p5uJw5RLqwkmJj+V760L9Bkw==";
+
+	key = read_ssh_key_oneline(input);
+
+	assert_int_equal(res, 0);
+	assert_non_null(key);
+	char *b64=NULL;
+	ssh_pki_export_pubkey_base64(*key, &b64);
+	assert_string_equal(b64, input+8);
+	free(b64);
+	ssh_key_free(*key);
+	ssh_key_free(*reference);
+
+}
+
 void test_strip_chars(void **state) {
 	(void) state;
 	char *res=NULL;
@@ -327,6 +366,7 @@ int main (void)
 		cmocka_unit_test(test_struct),
 		cmocka_unit_test(test_add_if_not_exist),
 		cmocka_unit_test(test_build_content),
+		cmocka_unit_test(test_build_filename),
 		cmocka_unit_test(test_contains),
 		cmocka_unit_test(test_count),
 		cmocka_unit_test(test_create_userpubkey),
@@ -335,6 +375,7 @@ int main (void)
 		cmocka_unit_test(test_free_last),
 		cmocka_unit_test(test_print_content),
 		cmocka_unit_test(test_print_keys),
+		cmocka_unit_test(test_read_ssh_key_oneline),
 		cmocka_unit_test(test_strip_chars),
 	};
 

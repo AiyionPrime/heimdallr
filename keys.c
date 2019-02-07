@@ -53,6 +53,37 @@ char* build_content(struct UserPubkey *upk) {
 }
 
 /*
+ * Function: build_filename
+ *
+ * build a pretty unique filename for a ssh pubkey
+ *
+ * upk: the userpubkey to generate a filename for
+ *
+ * returns: the filename of a ssh-key
+ */
+
+char* build_filename(struct UserPubkey* upk) {
+	char *buffer=NULL;
+	char *stripped=NULL;
+	char *result=NULL;
+	unsigned char *hash=NULL;
+	size_t len;
+	enum ssh_publickey_hash_type htype;
+	htype = SSH_PUBLICKEY_HASH_MD5;
+
+	ssh_get_publickey_hash(*(upk->pubkey), htype, &hash, &len);
+	buffer = ssh_get_fingerprint_hash(htype, hash, len);
+	ssh_clean_pubkey_hash(&hash);
+	stripped = strip_chars(buffer+3*sizeof(char),":");
+	ssh_string_free_char(buffer);
+	result = malloc((strlen(stripped)+4+1)*sizeof(char));
+	strcpy(result, stripped);
+	free(stripped);
+	strcat(result, ".pub");
+	return result;
+}
+
+/*
  * Function: contains
  *
  * return, whether a public ssh_key is part of the linked list
@@ -225,6 +256,58 @@ int print_content(struct UserPubkey *upk) {
 	ret = printf(content);
 	free(content);
 	return ret;
+}
+
+/*
+ * Function: read_ssh_key_oneline
+ *
+ * read an ssh pubkey in online format (type first followed by base64 representation)
+ *
+ * author: asn (libssh pki.c)
+ *
+ * oneline: the ssh-key to read
+ *
+ * returns: a pointer to a libssh ssh-key or null on failure
+*/
+
+ssh_key* read_ssh_key_oneline(const char* oneline)
+{
+	ssh_key *key=malloc(sizeof(ssh_key*));
+	enum ssh_keytypes_e type;
+	char *q, *p;
+	size_t buflen = strlen(oneline);
+	int i=0;
+	int rc=0;
+	p = malloc(strlen(oneline)+1);
+	strcpy(p,oneline);
+
+	q = p;
+	for (i = 0; i < buflen; i++) {
+		if (' '==(int)p[i] || '\t'==(int)p[i]) {
+			p[i] = '\0';
+			break;
+		}
+	}
+
+	type = ssh_key_type_from_name(q);
+	if (type == SSH_KEYTYPE_UNKNOWN) {
+		return NULL;
+	}
+
+	q = &p[i + 1];
+	for (; i < buflen; i++) {
+		if (' '==(int)p[i] || '\t'==(int)p[i]) {
+			p[i] = '\0';
+			break;
+		}
+	}
+
+	rc = ssh_pki_import_pubkey_base64(q, type, key);
+	free(p);
+	if (SSH_ERROR == rc){
+		return NULL;
+	}
+	return key;
 }
 
 /*

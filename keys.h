@@ -21,6 +21,8 @@ int add_if_not_exist(struct UserPubkey*, struct UserPubkey*);
 
 char* build_content(struct UserPubkey*);
 
+char* build_filename(struct UserPubkey*);
+
 int contains(struct UserPubkey, ssh_key);
 
 int count(struct UserPubkey*);
@@ -36,6 +38,8 @@ int free_all(struct UserPubkey*);
 int print_keys(struct UserPubkey*);
 
 int print_content(struct UserPubkey*);
+
+ssh_key *read_ssh_key_oneline(const char*);
 
 char *strip_chars(const char *, const char *);
 
