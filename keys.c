@@ -226,3 +226,33 @@ int print_content(struct UserPubkey *upk) {
 	free(content);
 	return ret;
 }
+
+/*
+ * Function: strip_chars
+ *
+ * generate a copy of a string less some given characters
+ * the caller needs to free the returned string
+ *
+ * string: the string holding the original data
+ *
+ * chars: the characters to strip from the given string
+ *
+ * returns: a new string, which contains the original one less the given characters
+ */
+
+char *strip_chars(const char *string, const char *chars)
+{
+	char * newstr = malloc(strlen(string) + 1);
+	int counter = 0;
+
+	for ( ; *string; string++) {
+		if (!strchr(chars, *string)) {
+			newstr[ counter ] = *string;
+			++ counter;
+		}
+	}
+
+	newstr[counter] = 0;
+	return newstr;
+}
+

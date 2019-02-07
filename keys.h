@@ -37,4 +37,6 @@ int print_keys(struct UserPubkey*);
 
 int print_content(struct UserPubkey*);
 
+char *strip_chars(const char *, const char *);
+
 #endif //KEYS_HEIMDALLR_H_

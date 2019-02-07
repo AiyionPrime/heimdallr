@@ -296,6 +296,20 @@ void test_print_keys(void **state) {
 	assert_int_equal(2, ret2);
 }
 
+void test_strip_chars(void **state) {
+	(void) state;
+	char *res=NULL;
+	res=strip_chars("one-or-more-dashes","-");
+	assert_string_equal(res, "oneormoredashes");
+	free(res);
+	res=strip_chars("a/slash/or/two/","/");
+	assert_string_equal(res, "aslashortwo");
+	free(res);
+	res=strip_chars("but/wont/touch/these/","-");
+	assert_string_equal(res, "but/wont/touch/these/");
+	free(res);
+}
+
 int setup (void ** state)
 {
 	return 0;
@@ -321,6 +335,7 @@ int main (void)
 		cmocka_unit_test(test_free_last),
 		cmocka_unit_test(test_print_content),
 		cmocka_unit_test(test_print_keys),
+		cmocka_unit_test(test_strip_chars),
 	};
 
 	int count_fail_tests =
