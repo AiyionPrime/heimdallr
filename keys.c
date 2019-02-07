@@ -40,12 +40,13 @@ char* build_content(struct UserPubkey *upk) {
 	char *b64;
 	ssh_pki_export_pubkey_base64(*(upk->pubkey), &b64);
 	const char *type = ssh_key_type_to_char(ssh_key_type(*(upk->pubkey)));
-	new_content=calloc(strlen(type)+1+strlen(b64)+1+strlen(upk->comment)+1, sizeof(char));
+	new_content=calloc(strlen(type)+1+strlen(b64)+1+strlen(upk->comment)+1+1, sizeof(char));
 	strcpy(new_content, type);
 	strcat(new_content, " ");
 	strcat(new_content, b64);
 	strcat(new_content, " ");
 	strcat(new_content, upk->comment);
+	strcat(new_content, "\n");
 
 	free(b64);
 
