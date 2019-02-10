@@ -314,6 +314,48 @@ ssh_key* read_ssh_key_oneline(const char* oneline)
 }
 
 /*
+ * Function: read_comment_oneline
+ *
+ * read the comment of an ssh pubkey in online format
+ * this function is based on asn's read pubkey function
+ *
+ * oneline: the ssh-key to read
+ *
+ * returns: a pointer to a comment of a pubkey
+ * the caller needs to free the returned string
+*/
+
+char* read_comment_oneline(const char* oneline)
+{
+	char *p;
+	size_t buflen = strlen(oneline);
+	int i=0;
+
+	for (i = 0; i < buflen; i++) {
+		if (' '==(int)oneline[i] || '\t'==(int)oneline[i]) {
+			break;
+		}
+	}
+
+	i++;
+
+	for (; i < buflen; i++) {
+		if (' '==(int)oneline[i] || '\t'==(int)oneline[i]) {
+			break;
+		}
+	}
+
+	p = malloc(strlen(oneline+i+1)+1);
+	if (NULL == p){
+		return NULL;
+	}
+
+	strcpy(p,oneline+i+1);
+
+	return p;
+}
+
+/*
  * Function: strip_chars
  *
  * generate a copy of a string less some given characters

@@ -39,6 +39,8 @@ int print_keys(struct UserPubkey*);
 
 int print_content(struct UserPubkey*);
 
+char* read_comment_oneline(const char*);
+
 ssh_key *read_ssh_key_oneline(const char*);
 
 char *strip_chars(const char *, const char *);

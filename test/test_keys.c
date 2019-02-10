@@ -315,6 +315,14 @@ void test_print_keys(void **state) {
 	assert_int_equal(2, ret2);
 }
 
+void test_read_comment_oneline(void **state) {
+	(void) state;
+	char * ans=NULL;
+	ans = read_comment_oneline("ssh-rsa AAAABgibberish== a test coment");
+	assert_string_equal("a test coment", ans);
+	free(ans);
+}
+
 void test_read_ssh_key_oneline(void **state) {
 	(void) state;
 	int res=0;
@@ -377,6 +385,7 @@ int main (void)
 		cmocka_unit_test(test_free_last),
 		cmocka_unit_test(test_print_content),
 		cmocka_unit_test(test_print_keys),
+		cmocka_unit_test(test_read_comment_oneline),
 		cmocka_unit_test(test_read_ssh_key_oneline),
 		cmocka_unit_test(test_strip_chars),
 	};
