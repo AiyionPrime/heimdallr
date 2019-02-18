@@ -73,7 +73,12 @@ void test_add_if_not_exist(void **state) {
 	ret = add_if_not_exist(upk_p, upk2_p);
 	ret2 = add_if_not_exist(upk_p, upk2_p);
 
-	free_all(upk_p);
+	ssh_key_free(*(upk_p->pubkey));
+	ssh_key_free(*(upk2_p->pubkey));
+	free(upk_p->pubkey);
+	free(upk2_p->pubkey);
+	free(upk_p);
+	free(upk2_p);
 
 	assert_int_equal(1, ret);
 	assert_int_equal(0, ret2);
@@ -117,7 +122,12 @@ void test_build_filename(void **state) {
 	strcpy(upk->comment, "testuser@github");
 
 	result = build_filename(upk);
-	free_all(upk);
+	ssh_key_free(*(upk->pubkey));
+	free(upk->comment);
+	free(upk->pubkey);
+	free(upk->username);
+	free(upk);
+
 	assert_string_equal(expected, result);
 	free(result);
 }
