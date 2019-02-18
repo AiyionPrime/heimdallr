@@ -165,7 +165,12 @@ int get_keys(const char *username)
 	int new_len = strlen(username)+strlen(key_url)-2+1;
 	char *built_url;
 	struct json_object *jobj = NULL, *tuplejobj, *keyjobj;
+	ssh_key *currentkey_p;
+	int max_keys = 32;
+	struct UserPubkey *tempupk=NULL;
+	struct UserPubkey *rootupk=NULL;
 
+	char *tempcomment=NULL;
 	built_url = malloc(new_len * sizeof(char));
 	snprintf(built_url, new_len, key_url, username);
 
@@ -181,13 +186,34 @@ int get_keys(const char *username)
 		for (int i=0; i<arraylen; i++) {
 			tuplejobj = json_object_array_get_idx(jobj, i);
 			json_object_object_get_ex(tuplejobj, "key", &keyjobj);
-			printf("%s %s@github\n", json_object_get_string(keyjobj), username);
+			const char * keyb64 = json_object_get_string(keyjobj);
+			currentkey_p = read_ssh_key_oneline(keyb64);
+			if (NULL == currentkey_p) {
+				continue;
+			}
+			char *commentpattern = "%s@github";
+			int userlen = strlen(username);
+			int commentpatternlen = strlen(commentpattern)-2;
+			if (count(rootupk) < max_keys ) {
+				tempcomment = malloc((commentpatternlen+userlen+1)*sizeof(char));
+				snprintf(tempcomment, commentpatternlen+userlen+1, commentpattern, username);
+				tempupk = create_userpubkey(username, currentkey_p, tempcomment);
+				free(tempcomment);
+				if (NULL == rootupk) {
+					rootupk = tempupk;
+				}else{
+					add_if_not_exist(rootupk, tempupk);
+				}
+			}
 		}
 	}else{
 		printf("Error: User was not found.\n");
 	}
 	json_object_put(jobj);
 	free(built_url);
+
+	print_keys(rootupk);
+	free_all(rootupk);
 	return EXIT_SUCCESS;
 }
 

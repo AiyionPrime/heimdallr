@@ -228,10 +228,10 @@ void test_get_keys(void **state) {
 	int ret;
 	struct json_object *fjobj;
 	char * fake_response = "[ { \"id\": 13371337,\
-				    \"key\": \"ssh-rsa c3NoLXJzYSBwdWI=\" }, \
-				  { \"id\": 13371338, \"key\": \"ssh-rsa c3NoLXJzYSBwdWIyCg==\" } ]";
+				    \"key\": \"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQDPKtx0gYki7FQ6Id/pzOOQKtAoOK+CB7Bz1yTySwLEXjiTDJd5NbUbUWY3xmrIS+rni5g7E3JFLZKDLYXg3diKCYCjgSKjZ07MQEBM7e4Jf8kQE4uuxyjp/6l4/r/nRgSrrkj08bY538OXliRV/0p5uJw5RLqwkmJj+V760L9Bkw==\" }, \
+				  { \"id\": 13371338, \"key\": \"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQC0NpinM3ojIUi5/CI3ltCoV2EEpzLh2Ep3dMXUHu2r5iBFuBVnhZNIlT0YwCHj6lyw6RLX9Qrbwe4CRERLgGt980jle5lx88AA4FJr2E78UOP20q6vfMSis6pZD3/qPLuo8Va/Apy3cB8prfxLnk25hP+S0SiVCuLcFjpoiNzP5w==\" } ]";
 	fjobj = json_tokener_parse(fake_response);
-	will_return(fetch_jobj, fjobj);	
+	will_return(fetch_jobj, fjobj);
 	ret = get_keys("test_user");
 	assert_int_equal(ret, 0);
 }
@@ -246,13 +246,13 @@ void test_find_user(void **state) {
 				  \"items\": [ \
 					{ \"login\": \"test1\", \"id\": 13 },\
 					{ \"login\": \"test2\", \"id\": 37 } ] }";
-	char * fake_keyresponse = "[ { \"id\": 13371337, \"key\": \"ssh-rsa c3NoLXJzYSBwdWI=\" },\
-				     { \"id\": 13371338, \"key\": \"ssh-rsa c3NoLXJzYSBwdWIyCg==\" } ]";
+	char * fake_keyresponse = "[ { \"id\": 13371337, \"key\": \"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQDPKtx0gYki7FQ6Id/pzOOQKtAoOK+CB7Bz1yTySwLEXjiTDJd5NbUbUWY3xmrIS+rni5g7E3JFLZKDLYXg3diKCYCjgSKjZ07MQEBM7e4Jf8kQE4uuxyjp/6l4/r/nRgSrrkj08bY538OXliRV/0p5uJw5RLqwkmJj+V760L9Bkw==\" },\
+				     { \"id\": 13371338, \"key\": \"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQC0NpinM3ojIUi5/CI3ltCoV2EEpzLh2Ep3dMXUHu2r5iBFuBVnhZNIlT0YwCHj6lyw6RLX9Qrbwe4CRERLgGt980jle5lx88AA4FJr2E78UOP20q6vfMSis6pZD3/qPLuo8Va/Apy3cB8prfxLnk25hP+S0SiVCuLcFjpoiNzP5w==\" } ]";
 	fjobj = json_tokener_parse(fake_response);
 	fjobjkey = json_tokener_parse(fake_keyresponse);
-	will_return(fetch_jobj, fjobj);	
+	will_return(fetch_jobj, fjobj);
 	will_return(__wrap_getline, 0);
-	will_return(fetch_jobj, fjobjkey);	
+	will_return(fetch_jobj, fjobjkey);
 	ret = find_user("test");
 	assert_int_equal(ret, 0);
 }
