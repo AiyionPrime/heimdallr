@@ -335,6 +335,7 @@ void test_print_keys(void **state) {
 	will_return(__wrap_printf, 226);
 	ret = print_keys(upk);
 	upk->next = upk2;
+
 	will_return(__wrap_printf, 226);
 	will_return(__wrap_printf, 228);
 	ret2 = print_keys(upk);
@@ -392,12 +393,15 @@ void test_strip_chars(void **state) {
 	(void) state;
 	will_return_always(__wrap__test_malloc, 0);
 	char *res=NULL;
+
 	res=strip_chars("one-or-more-dashes","-");
 	assert_string_equal(res, "oneormoredashes");
 	free(res);
+
 	res=strip_chars("a/slash/or/two/","/");
 	assert_string_equal(res, "aslashortwo");
 	free(res);
+
 	res=strip_chars("but/wont/touch/these/","-");
 	assert_string_equal(res, "but/wont/touch/these/");
 	free(res);
@@ -421,15 +425,19 @@ int main (void)
 		cmocka_unit_test(test_add_if_not_exist),
 		cmocka_unit_test(test_build_content),
 		cmocka_unit_test(test_build_filename),
+
 		cmocka_unit_test(test_contains),
 		cmocka_unit_test(test_count),
 		cmocka_unit_test(test_create_userpubkey),
 		cmocka_unit_test(test_holds),
 		cmocka_unit_test(test_free_all),
+
 		cmocka_unit_test(test_free_last),
+
 		cmocka_unit_test(test_print_content),
 		cmocka_unit_test(test_print_keys),
 		cmocka_unit_test(test_read_comment_oneline),
+
 		cmocka_unit_test(test_read_ssh_key_oneline),
 		cmocka_unit_test(test_strip_chars),
 	};
