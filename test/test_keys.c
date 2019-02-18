@@ -371,7 +371,6 @@ void test_read_ssh_key_oneline(void **state) {
 
 	int res=0;
 	ssh_key *key=NULL;
-	ssh_key *reference = generate_testpubkey(0);
 	const char *input = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQDPKtx0gYki7FQ6Id/pzOOQKtAoOK+CB7Bz1yTySwLEXjiTDJd5NbUbUWY3xmrIS+rni5g7E3JFLZKDLYXg3diKCYCjgSKjZ07MQEBM7e4Jf8kQE4uuxyjp/6l4/r/nRgSrrkj08bY538OXliRV/0p5uJw5RLqwkmJj+V760L9Bkw==";
 
 	key = read_ssh_key_oneline(input);
@@ -383,9 +382,7 @@ void test_read_ssh_key_oneline(void **state) {
 	assert_string_equal(b64, input+8);
 	free(b64);
 	ssh_key_free(*key);
-	ssh_key_free(*reference);
 	free(key);
-	free(reference);
 
 }
 
