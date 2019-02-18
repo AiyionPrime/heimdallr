@@ -8,6 +8,7 @@
 #include <stdarg.h>
 
 #include "config.h"
+#include "keys.h"
 #define GITHUB_HEIMDALLR_H_
 
 struct MemoryStruct { 
@@ -23,7 +24,6 @@ int find_user(char *name);
 
 int get_keys(const char *username);
 
-void free_keys(char **keys, size_t);
 
 size_t read_githubkeys(char **keys, char *username);
 

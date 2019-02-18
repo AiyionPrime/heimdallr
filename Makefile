@@ -78,7 +78,7 @@ compile-check-keys-rco:
 	$(CC) -o test/test_keys_m_rco $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test_keys_m_rco.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS_KEYS_RCO) $(TESTFLAGS)
 
 compile-check-github:
-	$(CC) -o test/test_github $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test_github.c github.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS_GITHUB) $(TESTFLAGS)
+	$(CC) -o test/test_github $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test_github.c keys.c github.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS_GITHUB) $(TESTFLAGS)
 
 compile-check-sshserver:
 	$(CC) -o test/test_sshserver $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test_sshserver.c sshserver.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS_SSHSERVER) $(TESTFLAGS)
