@@ -380,7 +380,7 @@ void test_read_ssh_key_oneline(void **state) {
 	char *b64=NULL;
 	ssh_pki_export_pubkey_base64(*key, &b64);
 	assert_string_equal(b64, input+8);
-	free(b64);
+	ssh_string_free_char(b64);
 	ssh_key_free(*key);
 	free(key);
 
