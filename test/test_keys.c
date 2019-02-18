@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include <stdarg.h>
 #include <stddef.h>
 #include <setjmp.h>
@@ -5,8 +7,7 @@
 
 #include <stdio.h>
 
-#include "../keys.h"
-
+#include "../keys.c"
 
 ssh_key *generate_testpubkey(int id) {
 	ssh_key *key=malloc(sizeof(ssh_key*));
@@ -20,14 +21,24 @@ ssh_key *generate_testpubkey(int id) {
 	return key;
 }
 
-
 int __real_printf(const char *format, ...);
 int __wrap_printf(const char *format, ...) {
 	return mock();
 }
 
+void *__real__test_malloc(const size_t size, const char* file, const int line);
+void *__wrap__test_malloc(size_t size, const char* file, const int line) {
+	int fail = (int) mock();
+	if (fail) {
+		return NULL;
+	} else {
+		return __real__test_malloc(size, file, line);
+	}
+}
+
 void test_struct(void **state) {
 	(void) state;
+	will_return(__wrap__test_malloc, 0);
 
 	struct UserPubkey upk = {
 		"testuser",
@@ -47,6 +58,8 @@ void test_struct(void **state) {
 
 void test_add_if_not_exist(void **state) {
 	(void) state;
+	will_return_always(__wrap__test_malloc, 0);
+
 	int ret = -1;
 	int ret2 = -1;
 
@@ -68,6 +81,8 @@ void test_add_if_not_exist(void **state) {
 
 void test_build_content(void **state) {
 	(void) state;
+	will_return_always(__wrap__test_malloc, 0);
+
 	char *stringified;
 	char *reference = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQDPKtx0gYki7FQ6Id/pzOOQKtAoOK+CB7Bz1yTySwLEXjiTDJd5NbUbUWY3xmrIS+rni5g7E3JFLZKDLYXg3diKCYCjgSKjZ07MQEBM7e4Jf8kQE4uuxyjp/6l4/r/nRgSrrkj08bY538OXliRV/0p5uJw5RLqwkmJj+V760L9Bkw== testuser@github\n";
 
@@ -88,6 +103,8 @@ void test_build_content(void **state) {
 
 void test_build_filename(void **state) {
 	(void) state;
+	will_return_always(__wrap__test_malloc, 0);
+
 	char* expected = "752700c40a96ffb72d2b7ac6a18ce7c8.pub";
 	char* result;
 
@@ -107,6 +124,8 @@ void test_build_filename(void **state) {
 
 void test_contains(void **state) {
 	(void) state;
+	will_return_always(__wrap__test_malloc, 0);
+
 	int ret = 0;
 
 	struct UserPubkey upk2 = {
@@ -151,6 +170,7 @@ void test_count(void **state) {
 
 void test_create_userpubkey(void **state) {
 	(void) state;
+	will_return_always(__wrap__test_malloc, 0);
 	struct UserPubkey *upk;
 	upk = create_userpubkey("testuser", generate_testpubkey(0),"testuser@host");
 
@@ -168,6 +188,8 @@ void test_create_userpubkey(void **state) {
 
 void test_free_all(void **state) {
 	(void) state;
+	will_return_always(__wrap__test_malloc, 0);
+
 	int ret = -1;
 
 	struct UserPubkey *upk_p=NULL;
@@ -190,6 +212,7 @@ void test_free_all(void **state) {
 
 void test_free_last(void **state) {
 	(void) state;
+	will_return_always(__wrap__test_malloc, 0);
 	int ret = -1;
 
 	struct UserPubkey *upk_p=NULL;
@@ -218,6 +241,8 @@ void test_free_last(void **state) {
 
 void test_holds(void **state) {
 	(void) state;
+	will_return_always(__wrap__test_malloc, 0);
+
 	int ret = -1;
 	int ret2 = -1;
 
@@ -252,6 +277,8 @@ void test_holds(void **state) {
 
 void test_print_content(void **state) {
 	(void) state;
+	will_return_always(__wrap__test_malloc, 0);
+
 	int ret = 0;
 
 	struct UserPubkey *upk;
@@ -275,6 +302,8 @@ void test_print_content(void **state) {
 
 void test_print_keys(void **state) {
 	(void) state;
+	will_return_always(__wrap__test_malloc, 0);
+
 	int ret=-1;
 	int ret2=-1;
 	struct UserPubkey *upk;
@@ -317,6 +346,8 @@ void test_print_keys(void **state) {
 
 void test_read_comment_oneline(void **state) {
 	(void) state;
+	will_return_always(__wrap__test_malloc, 0);
+
 	char * ans=NULL;
 	ans = read_comment_oneline("ssh-rsa AAAABgibberish== a test coment");
 	assert_string_equal("a test coment", ans);
@@ -325,6 +356,8 @@ void test_read_comment_oneline(void **state) {
 
 void test_read_ssh_key_oneline(void **state) {
 	(void) state;
+	will_return_always(__wrap__test_malloc, 0);
+
 	int res=0;
 	ssh_key *key=NULL;
 	ssh_key *reference = generate_testpubkey(0);
@@ -347,6 +380,7 @@ void test_read_ssh_key_oneline(void **state) {
 
 void test_strip_chars(void **state) {
 	(void) state;
+	will_return_always(__wrap__test_malloc, 0);
 	char *res=NULL;
 	res=strip_chars("one-or-more-dashes","-");
 	assert_string_equal(res, "oneormoredashes");

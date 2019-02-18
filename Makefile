@@ -6,7 +6,7 @@ CFLAGS = -Wall -Werror -DGIT_VERSION=\"$(GIT_VERSION)\" -DVERSION=\"$(VERSION)\"
 MOCKS_SSHSERVER = fopen ssh_channel_read ssh_pki_import_pubkey_file ssh_print_hash
 MOCKS_CONFIG = mkdir
 MOCKS_GITHUB = getline get_githubuser_dir _test_malloc opendir readdir ssh_pki_import_pubkey_file closedir printf
-MOCKS_KEYS = printf
+MOCKS_KEYS = printf _test_malloc
 
 LDLIBS = -lcurl -ljson-c -lcrypto -lssh
 #LDFLAGS = -Lusr/local/lib 
@@ -15,7 +15,7 @@ TESTLIBS = -lcmocka
 TESTFLAGS =
 
 TESTFLAGS_CONFIG += $(foreach MOCK,$(MOCKS_CONFIG),-Wl,--wrap=$(MOCK))
-TESTFLAGS_KEYS += $(foreach MOCK,$(MOCKS_KEYS),-Wl,--wrap=$(MOCK))
+TESTFLAGS_KEYS += -DUNIT_TESTING $(foreach MOCK,$(MOCKS_KEYS),-Wl,--wrap=$(MOCK))
 TESTFLAGS_GITHUB += $(foreach MOCK,$(MOCKS_GITHUB),-Wl,--wrap=$(MOCK))
 TESTFLAGS_SSHSERVER += $(foreach MOCK,$(MOCKS_SSHSERVER),-Wl,--wrap=$(MOCK))
 
@@ -69,7 +69,7 @@ compile-check-config:
 	$(CC) -o test/test_config $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test_config.c config.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS_CONFIG) $(TESTFLAGS)
 
 compile-check-keys:
-	$(CC) -o test/test_keys $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test_keys.c keys.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS_KEYS) $(TESTFLAGS)
+	$(CC) -o test/test_keys $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test_keys.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS_KEYS) $(TESTFLAGS)
 
 compile-check-github:
 	$(CC) -o test/test_github $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test_github.c github.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS_GITHUB) $(TESTFLAGS)
