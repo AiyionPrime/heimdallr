@@ -48,7 +48,7 @@ char* build_content(struct UserPubkey *upk) {
 	strcat(new_content, upk->comment);
 	strcat(new_content, "\n");
 
-	free(b64);
+	ssh_string_free_char(b64);
 
 	return new_content;
 }
@@ -275,7 +275,7 @@ int print_content(struct UserPubkey *upk) {
 
 ssh_key* read_ssh_key_oneline(const char* oneline)
 {
-	ssh_key *key=malloc(sizeof(ssh_key*));
+	ssh_key *key=malloc(sizeof(ssh_key));
 	enum ssh_keytypes_e type;
 	char *q, *p;
 	size_t buflen = strlen(oneline);
@@ -294,6 +294,7 @@ ssh_key* read_ssh_key_oneline(const char* oneline)
 
 	type = ssh_key_type_from_name(q);
 	if (type == SSH_KEYTYPE_UNKNOWN) {
+		free(p);
 		return NULL;
 	}
 
