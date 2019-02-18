@@ -77,9 +77,11 @@ compile-check-github:
 compile-check-sshserver:
 	$(CC) -o test/test_sshserver $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test_sshserver.c sshserver.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS_SSHSERVER) $(TESTFLAGS)
 
+.PHONY: compile-check
+compile-check: clean compile-check-config compile-check-github compile-check-keys compile-check-sshserver
 
 .PHONY: check
-check: clean compile-check-config compile-check-keys compile-check-github compile-check-sshserver
+check: compile-check
 	./test/test_config
 	./test/test_keys
 	./test/test_github
