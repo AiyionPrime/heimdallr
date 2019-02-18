@@ -209,7 +209,7 @@ int free_last(struct UserPubkey *upk) {
 }
 
 /*
- * Fucntion: holds
+ * Function: holds
  *
  * return, whether a specific UserPubkey contains a given libssh pubkey
  *
@@ -282,7 +282,7 @@ ssh_key* read_ssh_key_oneline(const char* oneline)
 	int i=0;
 	int rc=0;
 	p = malloc(strlen(oneline)+1);
-	strcpy(p,oneline);
+	strcpy(p, oneline);
 
 	q = p;
 	for (i = 0; i < buflen; i++) {
@@ -325,7 +325,7 @@ ssh_key* read_ssh_key_oneline(const char* oneline)
  * the caller needs to free the returned string
 */
 
-char* read_comment_oneline(const char* oneline)
+char *read_comment_oneline(const char* oneline)
 {
 	char *p;
 	size_t buflen = strlen(oneline);
@@ -376,7 +376,7 @@ char *strip_chars(const char *string, const char *chars)
 	for ( ; *string; string++) {
 		if (!strchr(chars, *string)) {
 			newstr[ counter ] = *string;
-			++ counter;
+			++counter;
 		}
 	}
 

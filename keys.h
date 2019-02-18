@@ -1,8 +1,9 @@
 #ifndef KEYS_HEIMDALLR_H_
 #include <stdlib.h>
-#include <dirent.h>
 #include <string.h>
 #include <stdarg.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include <stdio.h>
 
