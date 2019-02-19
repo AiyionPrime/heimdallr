@@ -12,7 +12,7 @@
 #include "keys_fileops.h"
 #define GITHUB_HEIMDALLR_H_
 
-struct MemoryStruct { 
+struct MemoryStruct {
 	char *memory;
 	size_t size;
 };
