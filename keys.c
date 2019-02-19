@@ -256,7 +256,7 @@ int print_keys(struct UserPubkey *upk) {
 int print_content(struct UserPubkey *upk) {
 	char *content = build_content(upk);
 	int ret=0;
-	ret = printf(content);
+	ret = printf("%s", content);
 	free(content);
 	return ret;
 }
