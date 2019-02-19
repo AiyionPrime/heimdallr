@@ -10,7 +10,7 @@ MOCKS_KEYS = printf _test_malloc
 MOCKS_KEYS_RCO = fileno fopen fread fstat _test_malloc read_comment_oneline
 
 LDLIBS = -lcurl -ljson-c -lcrypto -lssh
-#LDFLAGS = -Lusr/local/lib 
+#LDFLAGS = -Lusr/local/lib
 #INCLUDE = -Iusr/local/include
 TESTLIBS = -lcmocka
 TESTFLAGS =
