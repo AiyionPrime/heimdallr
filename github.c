@@ -285,7 +285,7 @@ int find_user(char *name)
 /*
  * Function: read_githubkeys
  *
- * Read all all available keys for a given GitHub-user from the config directory
+ * Read all available keys for a given GitHub-user from the config directory
  *
  * keys: a pointer to an array of strings to store the keys in
  *
