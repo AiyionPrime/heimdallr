@@ -316,6 +316,38 @@ void test_read_githubkeys_broken_cache(void **state) {
 	assert_int_equal(0, ret);
 }
 
+void test_read_githubkeys_emptydir(void **state) {
+	(void) state;
+	int ret=-1;
+	struct UserPubkey *keys=NULL;
+
+	char* fakepath = "/test/home/testuser/.config/heimdallr/githubkeys/agithubuser";
+	char* fakepath_heap=malloc((strlen(fakepath)+1)*sizeof(char));
+	strcpy(fakepath_heap, fakepath);
+
+	struct dirent* directory;
+	directory = malloc(sizeof(struct dirent));
+	strcpy(directory->d_name, ".");
+
+	will_return(__wrap_get_githubuser_dir, fakepath_heap);
+	will_return(__wrap_opendir, 1);
+	will_return(__wrap_readdir, directory);
+
+	strcpy(directory->d_name, "..");
+	will_return(__wrap_readdir, directory);
+
+	will_return(__wrap_readdir, NULL);
+	will_return(__wrap_closedir, 0);
+
+	ret = read_githubkeys(&keys, "agithubuser");
+	free(directory);
+	free(fakepath_heap);
+
+	assert_null(keys);
+
+	assert_int_equal(0, ret);
+}
+
 void test_get_keys(void **state) {
 	(void) state;
 	int ret;
@@ -410,6 +442,7 @@ int main (void)
 		cmocka_unit_test (test_read_githubkeys_many),
 		cmocka_unit_test (test_read_githubkeys_unknown),
 		cmocka_unit_test (test_read_githubkeys_broken_cache),
+		cmocka_unit_test (test_read_githubkeys_emptydir),
 		cmocka_unit_test (test_reduce_slashes),
 		cmocka_unit_test (test_validate_githubname),
 	};
