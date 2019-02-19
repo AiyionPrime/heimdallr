@@ -100,7 +100,7 @@ int teardown (void ** state) {
 }
 
 int main (void)
-{       
+{
 	const struct CMUnitTest tests [] =
 	{
 		cmocka_unit_test (test_print_fingerprint),
@@ -108,9 +108,9 @@ int main (void)
 		cmocka_unit_test (test_ReadExec_empty),
 		cmocka_unit_test (test_ReadExec_error),
 	};
-	
+
 	int count_fail_tests =
 	    cmocka_run_group_tests (tests, setup, teardown);
-	
+
 	return count_fail_tests;
 }
