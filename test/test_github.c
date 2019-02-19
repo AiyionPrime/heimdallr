@@ -36,6 +36,11 @@ int __wrap_getline(char **lineptr, size_t *n, FILE *stream) {
 	}
 }
 
+char *__real_import_pubkey_comment(const char *filename);
+char *__wrap_import_pubkey_comment(const char *filename) {
+	return mock_ptr_type(char*);
+}
+
 int __real_printf(const char *format, ...);
 int __wrap_printf(const char *format, ...) {
 	return 0;
@@ -77,9 +82,17 @@ int __wrap_ssh_pki_import_pubkey_file(const char *filename, ssh_key *pkey) {
 	//TODO check_string_expected_ptr(filname);;
 	int ret = mock();
 	if (0==ret) {
-		char * b64pub = mock_ptr_type(char*);
+		char *b64pub=NULL;
+		int key = mock();
+		switch (key) {
+			case 0:
+				b64pub = "AAAAB3NzaC1yc2EAAAADAQABAAAAgQDPKtx0gYki7FQ6Id/pzOOQKtAoOK+CB7Bz1yTySwLEXjiTDJd5NbUbUWY3xmrIS+rni5g7E3JFLZKDLYXg3diKCYCjgSKjZ07MQEBM7e4Jf8kQE4uuxyjp/6l4/r/nRgSrrkj08bY538OXliRV/0p5uJw5RLqwkmJj+V760L9Bkw==";
+				break;
+			default:
+				b64pub = "AAAAB3NzaC1yc2EAAAADAQABAAAAgQC0NpinM3ojIUi5/CI3ltCoV2EEpzLh2Ep3dMXUHu2r5iBFuBVnhZNIlT0YwCHj6lyw6RLX9Qrbwe4CRERLgGt980jle5lx88AA4FJr2E78UOP20q6vfMSis6pZD3/qPLuo8Va/Apy3cB8prfxLnk25hP+S0SiVCuLcFjpoiNzP5w==";
+		}
 		enum ssh_keytypes_e keytype = SSH_KEYTYPE_RSA;
-		ssh_pki_import_pubkey_base64(b64pub, keytype, pkey);
+		assert_int_equal(0, ssh_pki_import_pubkey_base64(b64pub, keytype, pkey));
 	}
 	return ret;
 }
@@ -153,73 +166,119 @@ void test_ensure_input_thrice(void ** state) {
 
 
 void test_read_githubkeys(void **state) {
-	int ret;
-	char **keys=NULL;
+	(void) state;
+	int ret=-1;
+	struct UserPubkey *keys=NULL;
+
 	char* fakepath = "/test/home/testuser/.config/heimdallr/githubkeys/agithubuser";
 	char* fakepath_heap=malloc((strlen(fakepath)+1)*sizeof(char));
+	strcpy(fakepath_heap, fakepath);
 	struct dirent* directory;
-	char * readkeyb64 = "AAAAB3NzaC1yc2EAAAADAQABAAAAgQDPKtx0gYki7FQ6Id/pzOOQKtAoOK+CB7Bz1yTySwLEXjiTDJd5NbUbUWY3xmrIS+rni5g7E3JFLZKDLYXg3diKCYCjgSKjZ07MQEBM7e4Jf8kQE4uuxyjp/6l4/r/nRgSrrkj08bY538OXliRV/0p5uJw5RLqwkmJj+V760L9Bkw==";
 	directory = malloc(sizeof(struct dirent));
 	strcpy(directory->d_name, "somepubfile");
-	strcpy(fakepath_heap, fakepath);
+
 	will_return(__wrap_get_githubuser_dir, fakepath_heap);
 	will_return(__wrap_opendir, 1);
-
-	will_return(__wrap_ssh_pki_import_pubkey_file, SSH_OK);
-	will_return(__wrap_ssh_pki_import_pubkey_file, readkeyb64);
-
 	will_return(__wrap_readdir, directory);
+	will_return(__wrap_ssh_pki_import_pubkey_file, 0);
+	will_return(__wrap_ssh_pki_import_pubkey_file, 0);
+	will_return(__wrap_import_pubkey_comment, "somecomment");
+
 	will_return(__wrap_readdir, NULL);
 	will_return(__wrap_closedir, 0);
-	ret = read_githubkeys(keys, "testuser");
+
+	ret = read_githubkeys(&keys, "agithubuser");
 	free(directory);
+	free(fakepath_heap);
+
+	assert_string_equal("agithubuser", keys->username);
+	assert_string_equal("somecomment", keys->comment);
+	assert_non_null(keys->pubkey);
+	assert_null(keys->next);
+
 	assert_int_equal(1, ret);
+
+	free(keys->username);
+	free(keys->comment);
+	ssh_key_free(*keys->pubkey);
+	free(keys->pubkey);
+	free(keys);
 }
 
 void test_read_githubkeys_many(void **state) {
-	int ret;
-	char **keys=NULL;
+	(void) state;
+	int ret=-1;
+	struct UserPubkey *keys=NULL;
+
 	char* fakepath = "/test/home/testuser/.config/heimdallr/githubkeys/agithubuser";
 	char* fakepath_heap=malloc((strlen(fakepath)+1)*sizeof(char));
+	strcpy(fakepath_heap, fakepath);
+
 	struct dirent* directory;
 	struct dirent* directory2;
-	char * readkeyb64 = "AAAAB3NzaC1yc2EAAAADAQABAAAAgQDPKtx0gYki7FQ6Id/pzOOQKtAoOK+CB7Bz1yTySwLEXjiTDJd5NbUbUWY3xmrIS+rni5g7E3JFLZKDLYXg3diKCYCjgSKjZ07MQEBM7e4Jf8kQE4uuxyjp/6l4/r/nRgSrrkj08bY538OXliRV/0p5uJw5RLqwkmJj+V760L9Bkw==";
-	char * readkey2b64 = "AAAAB3NzaC1yc2EAAAADAQABAAAAgQDPKtx0gYki7FQ6Id/pzOOQKtAoOK+CB7Bz1yTySwLEXjiTDJd5NbUbUWY3xmrIS+rni5g7E3JFLZKDLYXg3diKCYCjgSKjZ07MQEBM7e4Jf8kQE4uuxyjp/6l4/r/nRgSrrkj08bY538OXliRV/0p5uJw5RLqwkmJj+V760L9Bkw==";
 	directory = malloc(sizeof(struct dirent));
-	strcpy(directory->d_name, "somepubfile");
-	strcpy(fakepath_heap, fakepath);
 	directory2 = malloc(sizeof(struct dirent));
-	strcpy(directory2->d_name, "somepubfile");
-	strcpy(fakepath_heap, fakepath);
+	strcpy(directory->d_name, "somepubfile");
+	strcpy(directory2->d_name, "otherpubfile");
+
 	will_return(__wrap_get_githubuser_dir, fakepath_heap);
 	will_return(__wrap_opendir, 1);
 
 	will_return(__wrap_readdir, directory);
-	will_return(__wrap_ssh_pki_import_pubkey_file, SSH_OK);
-	will_return(__wrap_ssh_pki_import_pubkey_file, readkeyb64);
+	will_return(__wrap_ssh_pki_import_pubkey_file, 0);
+	will_return(__wrap_ssh_pki_import_pubkey_file, 0);
+	will_return(__wrap_import_pubkey_comment, "somecomment");
 
 	will_return(__wrap_readdir, directory2);
-	will_return(__wrap_ssh_pki_import_pubkey_file, SSH_OK);
-	will_return(__wrap_ssh_pki_import_pubkey_file, readkey2b64);
+	will_return(__wrap_ssh_pki_import_pubkey_file, 0);
+	will_return(__wrap_ssh_pki_import_pubkey_file, 1);
+	will_return(__wrap_import_pubkey_comment, "nextcomment");
 
 	will_return(__wrap_readdir, NULL);
 	will_return(__wrap_closedir, 0);
-	ret = read_githubkeys(keys, "testuser");
+
+	ret = read_githubkeys(&keys, "agithubuser");
 	free(directory);
 	free(directory2);
+	free(fakepath_heap);
+
+	assert_string_equal("agithubuser", keys->username);
+	assert_string_equal("somecomment", keys->comment);
+	assert_non_null(keys->pubkey);
+	assert_non_null(keys->next);
+
+	assert_string_equal("agithubuser", keys->next->username);
+	assert_string_equal("nextcomment", keys->next->comment);
+	assert_non_null(keys->next->pubkey);
+	assert_null(keys->next->next);
+
 	assert_int_equal(2, ret);
+
+	free(keys->next->username);
+	free(keys->next->comment);
+	ssh_key_free(*(keys->next->pubkey));
+	free(keys->next->pubkey);
+	free(keys->next);
+	free(keys->username);
+	free(keys->comment);
+	ssh_key_free(*keys->pubkey);
+	free(keys->pubkey);
+	free(keys);
 }
 
 void test_read_githubkeys_unknown(void **state) {
 	int ret;
-	char **keys=NULL;
+	(void) state;
+	struct UserPubkey *keys=NULL;
+
 	char* fakepath = "/test/home/unknownuser/";
 	char* fakepath_heap=malloc((strlen(fakepath)+1)*sizeof(char));
 	strcpy(fakepath_heap, fakepath);
 	will_return(__wrap_get_githubuser_dir, fakepath_heap);
 	will_return(__wrap_opendir, NULL);
-	ret = read_githubkeys(keys, "unknownuser");
+	ret = read_githubkeys(&keys, "unknownuser");
 	assert_int_equal(0, ret);
+	free(fakepath_heap);
 }
 
 

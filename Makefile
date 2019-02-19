@@ -5,7 +5,7 @@ CFLAGS = -Wall -Werror -DGIT_VERSION=\"$(GIT_VERSION)\" -DVERSION=\"$(VERSION)\"
 
 MOCKS_SSHSERVER = fopen ssh_channel_read ssh_pki_import_pubkey_file ssh_print_hash
 MOCKS_CONFIG = mkdir
-MOCKS_GITHUB = getline get_githubuser_dir _test_malloc opendir readdir ssh_pki_import_pubkey_file closedir printf
+MOCKS_GITHUB = getline get_githubuser_dir import_pubkey_comment _test_malloc opendir readdir ssh_pki_import_pubkey_file closedir printf
 MOCKS_KEYS = printf _test_malloc
 MOCKS_KEYS_RCO = fileno fopen fread fstat _test_malloc read_comment_oneline
 
@@ -78,7 +78,7 @@ compile-check-keys-rco:
 	$(CC) -o test/test_keys_m_rco $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test_keys_m_rco.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS_KEYS_RCO) $(TESTFLAGS)
 
 compile-check-github:
-	$(CC) -o test/test_github $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test_github.c keys.c github.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS_GITHUB) $(TESTFLAGS)
+	$(CC) -o test/test_github $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test_github.c keys.c keys_fileops.c github.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS_GITHUB) $(TESTFLAGS)
 
 compile-check-sshserver:
 	$(CC) -o test/test_sshserver $(INCLUDE) $(CFLAGS) $(LDFLAGS) test/test_sshserver.c sshserver.c $(LDLIBS) $(TESTLIBS) $(TESTFLAGS_SSHSERVER) $(TESTFLAGS)

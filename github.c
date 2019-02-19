@@ -294,53 +294,52 @@ int find_user(char *name)
  * returns: the amount of keys stored within the array
  */
 
-size_t read_githubkeys(char **keys, char *username) {
+size_t read_githubkeys(struct UserPubkey **keys, char *username) {
 	if (!validate_githubname(username)) {
 		return 0;
 	}
 	char* keydirpath = get_githubuser_dir(username);
 	DIR *d;
 	struct dirent *dir;
-	ssh_key cur_pubkey = NULL;
-	char ** cur_b64key_cp = NULL;
-	char * cur_b64key = NULL;
+	ssh_key *cur_pubkey = NULL;
 	int rc;
 	char * fullpath = NULL;
 	int max_keys = 32;
 	size_t keyamount = 0;
 
+	char *curcomment = NULL;
+	struct UserPubkey *tempupk = NULL;
+
 	d = opendir(keydirpath);
-	if (d)
+	if (!d)
 	{
-		while ((dir = readdir(d)) != NULL)
-		{
-			if (!strcmp(dir->d_name, ".") || !strcmp(dir->d_name, ".."))
-				continue;
-			fullpath = concat_dir(3, keydirpath, "/", dir->d_name);
-
-			rc = ssh_pki_import_pubkey_file(fullpath, &cur_pubkey);
-			if (SSH_OK == rc) {
-				rc = ssh_pki_export_pubkey_base64(cur_pubkey, &cur_b64key);
-				if (SSH_OK == rc ) {
-					if (keyamount < max_keys ) {
-						keyamount++;
-						cur_b64key_cp = realloc(cur_b64key_cp, keyamount*sizeof(char*));
-						cur_b64key_cp[keyamount-1]=cur_b64key;
-					}
-				} else {
-					printf("SSH_ERROR\n");
-				}
-			} else {
-				printf("%d\n", rc);
-			}
-			ssh_key_free(cur_pubkey);
-			free(fullpath);
-		}
-		closedir(d);
+		return keyamount;
 	}
-	free_keys(cur_b64key_cp, keyamount);
+	while ((dir = readdir(d)) != NULL)
+	{
+		if (!strcmp(dir->d_name, ".") || !strcmp(dir->d_name, ".."))
+			continue;
+		fullpath = concat_dir(3, keydirpath, "/", dir->d_name);
+		if (keyamount < max_keys ) {
+			cur_pubkey = calloc(1, sizeof(ssh_key));
+			rc = ssh_pki_import_pubkey_file(fullpath, cur_pubkey);
+			if (SSH_OK == rc) {
+					curcomment=import_pubkey_comment(fullpath);
+					tempupk = create_userpubkey(username, cur_pubkey, curcomment);
 
-	free(keydirpath);
+					if (NULL==*keys) {
+						*keys=tempupk;
+					}else{
+						add_if_not_exist(*keys, tempupk);
+					}
+					keyamount++;
+			} else {
+				free(cur_pubkey);
+			}
+		}
+		free(fullpath);
+	}
+	closedir(d);
 	return keyamount;
 }
 
