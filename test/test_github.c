@@ -164,6 +164,12 @@ void test_ensure_input_thrice(void ** state) {
 	assert_int_equal(ret, 0);
 }
 
+void test_read_githubkeys_invalid_username(void **state) {
+	(void) state;
+	int ret=-1;
+	ret = read_githubkeys(NULL, "!");
+	assert_int_equal(0, ret);
+}
 
 void test_read_githubkeys(void **state) {
 	(void) state;
@@ -371,6 +377,7 @@ int main (void)
 		cmocka_unit_test (test_ensure_input_thrice),
 		cmocka_unit_test (test_get_keys),
 		cmocka_unit_test (test_find_user),
+		cmocka_unit_test (test_read_githubkeys_invalid_username),
 		cmocka_unit_test (test_read_githubkeys),
 		cmocka_unit_test (test_read_githubkeys_many),
 		cmocka_unit_test (test_read_githubkeys_unknown),
